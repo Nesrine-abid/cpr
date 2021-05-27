@@ -567,6 +567,7 @@ if ($_SESSION['user'] == True) {
                         document.getElementById(dispo).style.color = "orange";
                         document.getElementById(dispo).style.padding = 10;
                     } else {
+                        
                         if (parseInt( array[rowNumber - 1]) == 0) {
                             document.getElementById(dispo).innerHTML = "Pièce non disponible";
                             document.getElementById(dispo).style.color = "red";
