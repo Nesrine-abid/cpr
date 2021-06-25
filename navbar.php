@@ -1,26 +1,28 @@
 <?php
 include("connexion.php");
 ?>
-<nav class="navbar navbar-expand-lg navbar-light bg-light" style="padding: 0em;">
+<link rel="stylesheet" href="./css/navbar.css" />
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light" id="navbarTop">
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
-  <div class="collapse navbar-collapse" id="navbarSupportedContent" style="background-color: #333;">
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active">
-        <a class="nav-link" href="magasin.php" style="color:white;">Nos Magasins<span class="sr-only">(current)</span></a>
+        <a class="nav-link" id="link1" href="magasin.php">Nos Magasins<span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="quiSommesNous.php" style="color:white;padding-left:2em;">Qui Sommes-Nous?</a>
+        <a class="nav-link" id="link2" href="quiSommesNous.php">Qui Sommes-Nous?</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="condition.php" style="color:white;">Conditions Générale De Vente</a>
+        <a class="nav-link" id="link3" href="condition.php">Conditions Générale De Vente</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="contact.php" style="color:white;">Contactez-Nous</a>
+        <a class="nav-link" id="link4" href="contact.php">Contactez-Nous</a>
       </li>
-      <li class="nav-item" style="float:right;text-align:right;">
-        <a class="nav-link" href="logout.php" style="color:white;">Déconnecter</a>
+      <li class="nav-item">
+        <a class="nav-link" href="logout.php" id="deconnecter">Déconnecter</a>
       </li>
     </ul>
   </div>
@@ -28,25 +30,25 @@ include("connexion.php");
 
 <div class="row g-0">
   <div class="col-md-4">
-    <img src="img/logo.png" class="card-img-top">
+    <img src="img/logo2.png" class="card-img-top">
   </div>
   <div class="col-md-8">
     <div class="col-md-6">
       <h5 class="card-title"></h5>
     </div>
     <div class="col-md-12">
-      <div style="float:right;">
+      <div id="euroLogo">
         <img src="img/euro.png" class="card-img-top">
       </div>
     </div>
   </div>
 </div>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light" style="padding: 0em;">
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+<nav class="navbar navbar-expand-lg navbar-light bg-light" id="navbarBottom">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent1" aria-controls="navbarSupportedContent1" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+  <div class="collapse navbar-collapse" id="navbarSupportedContent1">
     <ul class="navbar-nav mr-auto">
 
       <li class="nav-item dropdown">

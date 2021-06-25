@@ -11,17 +11,18 @@ if ($_SESSION['user'] == True) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-        <link rel="stylesheet" href="./css/style.css" />
+        <link rel="stylesheet" href="./css/commande.css" />
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="commande.js"></script>
         <title>CPR</title>
     </head>
 
-    <body style="text-align: center">
-        <div style="margin-right:5em;margin-left:5em">
-            <div class="col" id="tab1" style="display:block;">
-                <table id="tabledit" class="table table-bordered">
+    <body>
+        <div id="tables">
+            <div class="col" id="tab1" style="display:block">
+                <table class="table table-bordered">
                     <thead>
                         <tr class="table-active">
                             <th scope="col">N°</th>
@@ -44,22 +45,22 @@ if ($_SESSION['user'] == True) {
                                     <div class="form-group col-md-12">
                                         <form autocomplete="off">
                                             <div class="autocomplete">
-                                                <input type="text" class="form-control" id="myInput<?php echo $nombre_de_lignes; ?>" onfocus="showHint(event)" onkeyup="showHint(event)">
+                                                <input type="text" class="form-control" id="codeArticle<?php echo $nombre_de_lignes; ?>" onfocus="showHint(event)" onkeyup="showHint(event)">
                                             </div>
                                         </form>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="form-group col-md-8">
-                                        <input id="number<?php echo $nombre_de_lignes; ?>" type="number" class="form-control" value="0" min="0" onchange="showHint1(event)">
+                                        <input id="quantité<?php echo $nombre_de_lignes; ?>" type="number" class="form-control" value="0" min="0" onchange="showHint1(event)">
                                     </div>
                                 </td>
                                 <td>
-                                    <p id="dispo<?php echo $nombre_de_lignes; ?>"></p>
+                                    <p id="disponibility<?php echo $nombre_de_lignes; ?>"></p>
                                 </td>
-                                <td id="price<?php echo $nombre_de_lignes; ?>" style="text-align: right;"></td>
+                                <td class="priceAndTotal" id="price<?php echo $nombre_de_lignes; ?>"></td>
                                 <td>Taux de remise</td>
-                                <td id="total<?php echo $nombre_de_lignes; ?>" style="text-align: right;"></td>
+                                <td class="priceAndTotal" id="total<?php echo $nombre_de_lignes; ?>"></td>
                             </tr>
                         </tbody>
                     <?php $nombre_de_lignes++;
@@ -67,7 +68,7 @@ if ($_SESSION['user'] == True) {
                 </table>
             </div>
 
-            <div class="col" id="tab2" style="display:none;">
+            <div class="col" id="tab2">
                 <table class="table table-bordered">
                     <thead>
                         <tr class="table-active">
@@ -91,22 +92,22 @@ if ($_SESSION['user'] == True) {
                                     <div class="form-group col-md-12">
                                         <form autocomplete="off">
                                             <div class="autocomplete">
-                                                <input type="text" class="form-control" id="myInput<?php echo $nombre_de_lignes; ?>" onfocus="showHint(event)" onkeyup="showHint(event)">
+                                                <input type="text" class="form-control" id="codeArticle<?php echo $nombre_de_lignes; ?>" onfocus="showHint(event)" onkeyup="showHint(event)">
                                             </div>
                                         </form>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="form-group col-md-8">
-                                        <input id="number<?php echo $nombre_de_lignes; ?>" type="number" class="form-control" value="0" min="0" onchange="showHint1(event)">
+                                        <input id="quantité<?php echo $nombre_de_lignes; ?>" type="number" class="form-control" value="0" min="0" onchange="showHint1(event)">
                                     </div>
                                 </td>
                                 <td>
-                                    <p id="dispo<?php echo $nombre_de_lignes; ?>"></p>
+                                    <p id="disponibility<?php echo $nombre_de_lignes; ?>"></p>
                                 </td>
-                                <td id="price<?php echo $nombre_de_lignes; ?>" style="text-align: right;"></td>
+                                <td class="priceAndTotal" id="price<?php echo $nombre_de_lignes; ?>"></td>
                                 <td>Taux de remise</td>
-                                <td id="total<?php echo $nombre_de_lignes; ?>" style="text-align: right;"></td>
+                                <td class="priceAndTotal" id="total<?php echo $nombre_de_lignes; ?>"></td>
                             </tr>
                         </tbody>
                         </tbody>
@@ -115,7 +116,7 @@ if ($_SESSION['user'] == True) {
                 </table>
             </div>
 
-            <div class="col" id="tab3" style="display:none;">
+            <div class="col" id="tab3">
                 <table class="table table-bordered">
                     <thead>
                         <tr class="table-active">
@@ -138,22 +139,22 @@ if ($_SESSION['user'] == True) {
                                     <div class="form-group col-md-12">
                                         <form autocomplete="off">
                                             <div class="autocomplete">
-                                                <input type="text" class="form-control" id="myInput<?php echo $nombre_de_lignes; ?>" onfocus="showHint(event)" onkeyup="showHint(event)">
+                                                <input type="text" class="form-control" id="codeArticle<?php echo $nombre_de_lignes; ?>" onfocus="showHint(event)" onkeyup="showHint(event)">
                                             </div>
                                         </form>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="form-group col-md-8">
-                                        <input id="number<?php echo $nombre_de_lignes; ?>" type="number" class="form-control" value="0" min="0" onchange="showHint1(event)">
+                                        <input id="quantité<?php echo $nombre_de_lignes; ?>" type="number" class="form-control" value="0" min="0" onchange="showHint1(event)">
                                     </div>
                                 </td>
                                 <td>
-                                    <p id="dispo<?php echo $nombre_de_lignes; ?>"></p>
+                                    <p id="disponibility<?php echo $nombre_de_lignes; ?>"></p>
                                 </td>
-                                <td id="price<?php echo $nombre_de_lignes; ?>" style="text-align: right;"></td>
+                                <td class="priceAndTotal" id="price<?php echo $nombre_de_lignes; ?>"></td>
                                 <td>Taux de remise</td>
-                                <td id="total<?php echo $nombre_de_lignes; ?>" style="text-align: right;"></td>
+                                <td class="priceAndTotal" id="total<?php echo $nombre_de_lignes; ?>"></td>
                             </tr>
                         </tbody>
                     <?php $nombre_de_lignes++;
@@ -161,7 +162,7 @@ if ($_SESSION['user'] == True) {
                 </table>
             </div>
 
-            <div class="col" id="tab4" style="display:none;">
+            <div class="col" id="tab4">
                 <table class="table table-bordered">
                     <thead>
                         <tr class="table-active">
@@ -184,22 +185,22 @@ if ($_SESSION['user'] == True) {
                                     <div class="form-group col-md-12">
                                         <form autocomplete="off">
                                             <div class="autocomplete">
-                                                <input type="text" class="form-control" id="myInput<?php echo $nombre_de_lignes; ?>" onfocus="showHint(event)" onkeyup="showHint(event)">
+                                                <input type="text" class="form-control" id="codeArticle<?php echo $nombre_de_lignes; ?>" onfocus="showHint(event)" onkeyup="showHint(event)">
                                             </div>
                                         </form>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="form-group col-md-8">
-                                        <input id="number<?php echo $nombre_de_lignes; ?>" type="number" class="form-control" value="0" min="0" onchange="showHint1(event)">
+                                        <input id="quantité<?php echo $nombre_de_lignes; ?>" type="number" class="form-control" value="0" min="0" onchange="showHint1(event)">
                                     </div>
                                 </td>
                                 <td>
-                                    <p id="dispo<?php echo $nombre_de_lignes; ?>"></p>
+                                    <p id="disponibility<?php echo $nombre_de_lignes; ?>"></p>
                                 </td>
-                                <td id="price<?php echo $nombre_de_lignes; ?>" style="text-align: right;"></td>
+                                <td class="priceAndTotal" id="price<?php echo $nombre_de_lignes; ?>"></td>
                                 <td>Taux de remise</td>
-                                <td id="total<?php echo $nombre_de_lignes; ?>" style="text-align: right;"></td>
+                                <td class="priceAndTotal" id="total<?php echo $nombre_de_lignes; ?>"></td>
                             </tr>
                         </tbody>
                     <?php $nombre_de_lignes++;
@@ -208,8 +209,8 @@ if ($_SESSION['user'] == True) {
             </div>
         </div>
 
-        <h4 class="card-title" style="margin-left:70em;">Total TTC</h4>
-        <ul class="list-group" style="max-width: 150px;text-align:right; margin-left:95em;">
+        <h4 class="card-title" id="total-TTC">Total TTC</h4>
+        <ul class="list-group" id="total-TTC-Output">
             <li class="list-group-item" id="totalCommande">0</li>
         </ul>
 
@@ -220,10 +221,10 @@ if ($_SESSION['user'] == True) {
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
-                <li class="page-item"><a class="page-link" onclick=test1()>1</a></li>
-                <li class="page-item"><a class="page-link" onclick=test2()>2</a></li>
-                <li class="page-item"><a class="page-link" onclick=test3()>3</a></li>
-                <li class="page-item"><a class="page-link" onclick=test4()>4</a></li>
+                <li class="page-item"><a class="page-link" onclick=showTab1()>1</a></li>
+                <li class="page-item"><a class="page-link" onclick=showTab2()>2</a></li>
+                <li class="page-item"><a class="page-link" onclick=showTab3()>3</a></li>
+                <li class="page-item"><a class="page-link" onclick=showTab4()>4</a></li>
                 <li class="page-item">
                     <a class="page-link" onclick=next() aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
@@ -231,61 +232,179 @@ if ($_SESSION['user'] == True) {
                 </li>
             </ul>
         </nav>
+
+        <div class="modal" tabindex="-1" role="dialog" id="modalArticleSubstitution">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">EQUIVALENCE</h3>
+                    </div>
+                    <form action="commande.php" method="$_POST">
+                        <div class="modal-body">
+                            <table class="table table-bordered" id="tableArtSubst">
+                                <thead>
+                                    <tr class="table-active">
+                                        <th scope="col">N°</th>
+                                        <th scope="col">Code Article</th>
+                                        <th scope="col">Prix</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="AjoutArticle()">Remplacer l'article</button>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="AjoutArticle()" style="display:none;" id="replace">Ajouter à la commande</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="fermer()">Fermer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </body>
-
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous"></script>
     <script>
-        function test1() {
-            document.getElementById("tab1").style.display = "block";
-            document.getElementById("tab2").style.display = "none";
-            document.getElementById("tab3").style.display = "none";
-            document.getElementById("tab4").style.display = "none";
+        function fermer() {
+            $('#modalArticleSubstitution').modal("hide");
         }
 
-        function test2() {
-            document.getElementById("tab1").style.display = "none";
-            document.getElementById("tab2").style.display = "block";
-            document.getElementById("tab3").style.display = "none";
-            document.getElementById("tab4").style.display = "none";
+        var stockArtSaisie = []; // le stock de l'article ajouté dans le tableau
+        var qteArtSaisie = [];
+        var prixArtSaisie = [];
+
+        var nbreArtSub = 0; //contient le nombre d'article de subst de l'article ajouté dand le tableau
+        var codArtSubst = []; //contient tous les code article de subst de l'article ajouté dand le tableau
+        var prixArtSubst = []; //contient tous les prix article de subst de l'article ajouté dand le tableau
+
+        var codeArticle = '';
+        var price = '';
+        var total = '';
+        var rowNumber = '';
+        var pasArtSubst = true; // si l'article posséde des articles de substitition elle prend false 
+        var totalCommande = 0;
+        for (let i = 0; i < 20; i++) {
+            qteArtSaisie[i] = 0;
         }
 
-        function test3() {
-            document.getElementById("tab1").style.display = "none";
-            document.getElementById("tab2").style.display = "none";
-            document.getElementById("tab3").style.display = "block";
-            document.getElementById("tab4").style.display = "none";
+        function ajax(codeArticle, price, total, rowNumber) {
+
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var AjaxResult = JSON.parse(this.responseText);
+                    if (AjaxResult.prix_unitaire != undefined) {
+                        pasArtSubst = true;
+                        document.getElementById(price).innerHTML = AjaxResult.prix_unitaire;
+                        stockArtSaisie[rowNumber - 1] = AjaxResult.stock;
+                    } else {
+                        pasArtSubst = false;
+                        document.getElementById(price).innerHTML = AjaxResult[0].prix_unitaire;
+                        stockArtSaisie[rowNumber - 1] = AjaxResult[0].stock;
+                        nbreArtSub = AjaxResult.length;
+                        for (let i = 0; i < nbreArtSub; i++) {
+                            codArtSubst[i] = AjaxResult[i].Num_Sub;
+                            prixArtSubst[i] = AjaxResult[i].prix_Sub;
+                        }
+                    }
+                }
+            };
+            xmlhttp.open(
+                "GET",
+                "ajax.php?q=" + document.getElementById(codeArticle).value,
+                true
+            );
+            xmlhttp.send();
         }
 
-        function test4() {
-            document.getElementById("tab1").style.display = "none";
-            document.getElementById("tab2").style.display = "none";
-            document.getElementById("tab3").style.display = "none";
-            document.getElementById("tab4").style.display = "block";
+        function showHint(event) {
+            var rowNumber;
+            if (event.target.id.includes("codeArticle")) {
+                rowNumber = event.target.id.substring(event.target.id.indexOf("codeArticle") + 11, event.target.id.length);
+            } else {
+                rowNumber = event.target.parentNode.id.substring(
+                    event.target.parentNode.id.indexOf("codeArticle") + 11,
+                    event.target.parentNode.id.indexOf("autocomplete-list")
+                );
+            }
+            var codeArticle = "codeArticle" + rowNumber;
+            var price = "price" + rowNumber;
+            var total = "total" + rowNumber;
+            if (document.getElementById(codeArticle).value.length == 0) {
+                document.getElementById(price).innerHTML = "0";
+                document.getElementById(total).innerHTML = "0";
+                return;
+            } else {
+                ajax(codeArticle, price, total, rowNumber);
+            }
         }
+        //quantité entée par l'utilisateur
+        function showHint1(event) {
+            var rowNumber = event.target.id.substring(event.target.id.indexOf("quantité") + 8, event.target.id.length)
+            var codeArticle = "codeArticle" + rowNumber;
+            var price = "price" + rowNumber;
+            var total = "total" + rowNumber;
+            var disponibility = "disponibility" + rowNumber;
+            if (document.getElementById(codeArticle).value.length == 0) {
+                document.getElementById(price).innerHTML = "0";
+                document.getElementById(total).innerHTML = "0";
+                return;
+            } else {
+                ajax(codeArticle, price, total, rowNumber);
 
-        function Previous() {
-            if (document.getElementById("tab2").style.display == "block") {
-                test1();
-            }
-            if (document.getElementById("tab3").style.display == "block") {
-                test2();
-            }
-            if (document.getElementById("tab4").style.display == "block") {
-                test3();
-            }
-        }
-
-        function next() {
-            if (document.getElementById("tab3").style.display == "block") {
-                test4();
-            }
-            if (document.getElementById("tab2").style.display == "block") {
-                test3();
-            }
-            if (document.getElementById("tab1").style.display == "block") {
-                test2();
-            }
+                document.getElementById(total).innerHTML = document.getElementById(price).textContent * event.target.value;
+                //calcul du Total TTC
+                prixArtSaisie[rowNumber - 1] = document.getElementById(price).textContent;
+                if (event.target.value > qteArtSaisie[rowNumber - 1]) {
+                    totalCommande += parseInt(prixArtSaisie[rowNumber - 1]);
+                } else {
+                    if (event.target.value < qteArtSaisie[rowNumber - 1]) {
+                        totalCommande -= parseInt(prixArtSaisie[rowNumber - 1]);
+                    }
+                }
+                qteArtSaisie[rowNumber - 1] = event.target.value;
+                document.getElementById("totalCommande").innerHTML = totalCommande;
+                //Disponibilité
+                if (parseInt(stockArtSaisie[rowNumber - 1]) >= parseInt(event.target.value)) {
+                    document.getElementById(disponibility).innerHTML = "article disponible";
+                    document.getElementById(disponibility).style.color = "green";
+                    document.getElementById(disponibility).style.padding = 10;
+                } else {
+                    if ((parseInt(stockArtSaisie[rowNumber - 1]) < parseInt(event.target.value)) && (parseInt(stockArtSaisie[rowNumber - 1]) != 0)) {
+                        document.getElementById(disponibility).innerHTML = "Stock insuffisant";
+                        document.getElementById(disponibility).style.color = "orange";
+                        document.getElementById(disponibility).style.padding = 10;
+                        document.getElementById("replace").style.display = "block";
+                    } else {
+                        if (parseInt(stockArtSaisie[rowNumber - 1]) == 0) {
+                            document.getElementById(disponibility).innerHTML = "Pièce non disponible";
+                            document.getElementById(disponibility).style.color = "red";
+                            document.getElementById(disponibility).style.padding = 10;
+                            document.getElementById("replace").style.display = "none";
+                        }
+                    }
+                    if (!pasArtSubst) {
+                        $('#modalArticleSubstitution').modal({
+                            show: false
+                        })
+                        $('#modalArticleSubstitution').modal('show')
+                        var table = document.getElementById("tableArtSubst");
+                        while (table.rows.length > 1) {
+                            table.deleteRow(1);
+                        }
+                        for (let i = 1; i <= nbreArtSub; i++) {
+                            var row = table.insertRow(i);
+                            var cell1 = row.insertCell(0);
+                            var cell2 = row.insertCell(1);
+                            var cell3 = row.insertCell(2);
+                            cell1.innerHTML = "<input type='radio' name='subProduct'><label for='subProduct'>" + "Article" + i + "</label><br>";
+                            cell2.innerHTML = codArtSubst[i - 1];
+                            cell3.innerHTML = prixArtSubst[i - 1];
+                        }
+                    }
+                }
+            };
         }
     </script>
 
@@ -401,198 +520,16 @@ if ($_SESSION['user'] == True) {
                 closeAllLists(e.target);
             });
         }
-        var T = ["myInput1", "myInput2", "myInput3", "myInput4", "myInput5", "myInput6", "myInput7", "myInput8", "myInput9", "myInput10", "myInput11", "myInput12", "myInput13", "myInput14", "myInput15", "myInput16", "myInput17", "myInput18", "myInput19", "myInput20"];
+        var T = ["codeArticle1", "codeArticle2", "codeArticle3", "codeArticle4", "codeArticle5", "codeArticle6", "codeArticle7", "codeArticle8", "codeArticle9", "codeArticle10", "codeArticle11", "codeArticle12", "codeArticle13", "codeArticle14", "codeArticle15", "codeArticle16", "codeArticle17", "codeArticle18", "codeArticle19", "codeArticle20"];
         for (let i = 0; i < T.length; i++) {
             autocomplete(document.getElementById(T[i]), <?php echo json_encode($data); ?>);
         }
     </script>
 
-    <script>
-        var array = []; // le stock de l'article ajouté dans le tableau
-        var Numsub = []; //contient tous les code article de subst de l'article ajouté dand le tableau
-        var Prixsub = []; //contient tous les prix article de subst de l'article ajouté dand le tableau
-        var NbreArtSub = 0; //contient le nombre d'article de subst de l'article ajouté dand le tableau
-        var simple = True;
-
-        function showHint(event) {
-            var rowNumber;
-            if (event.target.id.includes("myInput")) {
-                rowNumber = event.target.id.substring(event.target.id.indexOf("myInput") + 7, event.target.id.length)
-            } else {
-                rowNumber = event.target.parentNode.id.substring(event.target.parentNode.id.indexOf("myInput") + 7, event.target.parentNode.id.indexOf("autocomplete-list"))
-            }
-            var input = "myInput" + rowNumber;
-            var price = "price" + rowNumber;
-            var total = "total" + rowNumber;
-            if (document.getElementById(input).value.length == 0) {
-                document.getElementById(price).innerHTML = "0";
-                document.getElementById(total).innerHTML = "0";
-                return;
-            } else {
-                var xmlhttp = new XMLHttpRequest();
-                xmlhttp.onreadystatechange = function() {
-                    if (this.readyState == 4 && this.status == 200) {
-                        var obj = JSON.parse(this.responseText);
-                        console.log(obj);
-                        //Object.keys(obj).length === 2
-                        if (obj.prix_unitaire != undefined) {
-                            simple=true;
-                            document.getElementById(price).innerHTML = obj.prix_unitaire;
-                            console.log(obj.prix_unitaire);
-                            array[rowNumber - 1] = obj.stock;
-                        } else {
-                            simple = false;
-                            document.getElementById(price).innerHTML = obj[0].prix_unitaire;
-                            array[rowNumber - 1] = obj[0].stock;
-                            NbreArtSub = obj.length;
-                            for (let i = 0; i < NbreArtSub; i++) {
-                                Numsub[i] = obj[i].Num_Sub;
-                                Prixsub[i] = obj[i].prix_Sub;
-                            }
-                        }
-                    }
-                };
-                xmlhttp.open("GET", "ajax.php?q=" + document.getElementById(input).value, true);
-                xmlhttp.send();
-            }
-        }
-
-        function fermer() {
-            $('#myModal').modal('hide');
-        }
-
-        function AjoutArticle() {
-            <?php
-            if (isset($_POST['Result'])) {
-                if (!empty($_POST['sub'])) {
-                    echo 'bravo' . $_POST['sub'];
-                } else {
-                    echo 'Please select the value.';
-                }
-            }
-            ?>
-        }
-    </script>
-
-    <div class="modal" tabindex="-1" role="dialog" id="myModal">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">EQUIVALENCE</h3>
-                </div>
-                <form action="commande.php
-            " method="$_POST">
-                    <div class="modal-body">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr class="table-active">
-                                    <th scope="col"></th>
-                                    <th scope="col">Code Article</th>
-                                    <th scope="col">Prix</th>
-                                </tr>
-                            </thead>
-                            <?php
-                            $nombre = 0;
-                            while ($nombre < 2) { ?>
-                                <tbody>
-                                    <tr>
-                                        <th scope="row">
-                                            <input type="radio" id="code<?php echo $nombre; ?>" name="sub" value="artsub<?php echo $nombre; ?>">
-                                            <label for="artsub<?php echo $nombre; ?>"> Article <?php echo $nombre + 1; ?> </label><br>
-                                        </th>
-                                        <td>
-                                            <p id="cod<?php echo $nombre; ?>"></p>
-                                        </td>
-                                        <td>
-                                            <p id="prix<?php echo $nombre; ?>"></p>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            <?php $nombre++;
-                            } ?>
-                        </table>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal" value="Result" name="Result" onclick="AjoutArticle()">Ajouter à la commande</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="fermer()">Fermer</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        var somme = 0;
-        var qte = [];
-        for (let i = 0; i < 20; i++) {
-            qte[i] = 0; //la quantité de l'article choisie par le user
-        }
-        var Tab = [];
-        //quantité entée par l'utilisateur
-        function showHint1(event) {
-            var rowNumber = event.target.id.substring(event.target.id.indexOf("number") + 6, event.target.id.length)
-            var input = "myInput" + rowNumber;
-            var price = "price" + rowNumber;
-            var total = "total" + rowNumber;
-            var dispo = "dispo" + rowNumber;
-
-            if (document.getElementById(input).value.length == 0) {
-                document.getElementById(price).innerHTML = "0";
-                document.getElementById(total).innerHTML = "0";
-                return;
-            } else {
-                document.getElementById(total).innerHTML = document.getElementById(price).textContent * event.target.value;
-                //calcul du Total TTC
-                Tab[rowNumber - 1] = document.getElementById(price).textContent;
-                if (event.target.value > qte[rowNumber - 1]) {
-                    somme += parseInt(Tab[rowNumber - 1]);
-                } else {
-                    if (event.target.value < qte[rowNumber - 1]) {
-                        somme -= parseInt(Tab[rowNumber - 1]);
-                    }
-                }
-                qte[rowNumber - 1] = event.target.value;
-                document.getElementById("totalCommande").innerHTML = somme;
-                //Disponibilité
-                console.log(typeof(event.target.value));
-                console.log(typeof(array[rowNumber - 1] ));
-
-                if (parseInt( array[rowNumber - 1]) >= parseInt(event.target.value)) {
-                    document.getElementById(dispo).innerHTML = "article disponible";
-                    document.getElementById(dispo).style.color = "green";
-                    document.getElementById(dispo).style.padding = 10;
-                } else { 
-                    if ((parseInt( array[rowNumber - 1]) < parseInt(event.target.value)) && (parseInt( array[rowNumber - 1])!= 0)) {
-                        document.getElementById(dispo).innerHTML = "Stock insuffisant";
-                        document.getElementById(dispo).style.color = "orange";
-                        document.getElementById(dispo).style.padding = 10;
-                    } else {
-                        
-                        if (parseInt( array[rowNumber - 1]) == 0) {
-                            document.getElementById(dispo).innerHTML = "Pièce non disponible";
-                            document.getElementById(dispo).style.color = "red";
-                            document.getElementById(dispo).style.padding = 10;
-                        }
-                    }
-                    if (!simple) {
-                        $('#myModal').modal({
-                            show: false
-                        })
-                        $('#myModal').modal('show')
-                        for (let i = 0; i < NbreArtSub; i++) {
-                            artsub = "cod" + i;
-                            prix = "prix" + i;
-                            document.getElementById(artsub).innerHTML = Numsub[i];
-                            document.getElementById(prix).innerHTML = Prixsub[i];
-                        }
-                    }
-
-                }
-            };
-        }
-    </script>
-
     </html>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous"></script>
+
 <?php
 } else {
     header('Location: login.php');
