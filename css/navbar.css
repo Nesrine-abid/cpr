@@ -1,18 +1,40 @@
 #navbarTop{
     padding: 0em;
+    margin: 0px !important;
+    border: 0px !important;
+    height: 40px !important;
 }
 #navbarSupportedContent{
     background-color: #333;
 }
-nav .navbar-nav li a{
+#navbarTop .navbar-nav li a{
     color: white !important;
     }
 #deconnecter{
     color:white;
-    padding-left:49em;
+    padding-left:20em;
+}
+#navContainer2{
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+}
+#navContainer1{
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+}
+#navContainerLeft{
+    padding: 0px !important;
+}
+#navContainerRight{
+    padding: 0px !important;
+}
+#navbarSupportedContent{
+    padding: 0px !important;
+
 }
 #euroLogo{
     float:right;
+    padding: 15px;
 }
 #navbarBottom{
     padding: 0em;

@@ -22,7 +22,7 @@ session_start();
     <div class="card">
         <div class="row g-0">
             <div class="col-md-4">
-                <img src="img/logo.png" class="card-img-top">
+                <img src="img/logo2.png" class="card-img-top">
             </div>
             <div class="col-md-8">
                 <div class="col-md-6">

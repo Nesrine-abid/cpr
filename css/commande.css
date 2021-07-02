@@ -1,31 +1,31 @@
 body {
-    text-align: center  
+  text-align: center  
 }
 #tables {
-    margin-right:5em;margin-left:5em
+  margin-right:5em;margin-left:5em
 }
 #tab1 {
-    display:block;
+  display:block;
 }
 #tab2 {
-    display:none;
+  display:none;
 }
 #tab3 {
-    display:none;
+  display:none;
 }
 #tab4 {
-    display:none;
+  display:none;
 }
 .priceAndTotal {
-    text-align: right;
+  text-align: right;
 }
 #total-TTC{
-    margin-left:70em;
+  margin-left:70em;
 }
 #total-TTC-Output{
-    max-width: 150px;
-    text-align:right;
-    margin-left:95em;
+  max-width: 150px;
+  text-align:right;
+  margin-left:95em;
 }
 
 
