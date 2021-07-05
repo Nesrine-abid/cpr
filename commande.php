@@ -20,6 +20,8 @@ if ($_SESSION['user'] == True) {
     </head>
 
     <body>
+        <?php $idUtilisateur = $_SESSION["userId"]; ?>
+
         <div id="tables">
             <div class="col" id="tab1" style="display:block">
                 <table class="table table-bordered">
@@ -213,10 +215,13 @@ if ($_SESSION['user'] == True) {
             </div>
         </div>
 
-        <h4 class="card-title" id="total-TTC">Total TTC</h4>
-        <ul class="list-group" id="total-TTC-Output">
-            <li class="list-group-item" id="totalCommande">0</li>
-        </ul>
+        <div>
+            <h4 class="card-title" id="total-TTC">Total TTC</h4>
+            <ul class="list-group" id="total-TTC-Output">
+                <li class="list-group-item" id="totalCommande">0</li>
+            </ul>
+            <button type="button" class="btn btn-danger" onclick="envoyerCommande()">Envoyer</button>
+        </div>
 
         <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-center">
@@ -273,14 +278,16 @@ if ($_SESSION['user'] == True) {
         var codeArticle = ''; //dynamic id 
         var price = ''; //dynamic id
         var total = ''; //dynamic id 
-        var rowNumber = '';
+        var rowNumber = 0;
         var maxRowNumber = 0;
         var nouvelleQteSaisie = 0;
 
         var stockArtSaisie = []; //le stock de l'article ajouté dans le tableau
         var qteArtSaisie = [];
         var prixArtSaisie = [];
-
+        for (let i = 0; i < 20; i++) {
+            qteArtSaisie[i] = 0;
+        }
         var nbreArtSub = 0; //nombre d'article de subst de l'article ajouté dand le tableau
         var codArtSubst = []; //les code des article de subst de l'article ajouté dand le tableau
         var prixArtSubst = []; //les prix des article de subst de l'article ajouté dand le tableau
@@ -288,9 +295,6 @@ if ($_SESSION['user'] == True) {
 
         var pasArtSubst = true; // si l'article posséde des articles de substitition elle prend false 
         var totalCommande = 0;
-        for (let i = 0; i < 20; i++) {
-            qteArtSaisie[i] = 0;
-        }
         var insertedCode = [];
         var c = 0;
 
@@ -303,10 +307,12 @@ if ($_SESSION['user'] == True) {
                         pasArtSubst = true;
                         document.getElementById(price).innerHTML = AjaxResult.prix_unitaire;
                         stockArtSaisie[rowNumber - 1] = AjaxResult.stock;
+                        prixArtSaisie[rowNumber - 1] = AjaxResult.prix_unitaire;
                     } else {
                         pasArtSubst = false;
                         document.getElementById(price).innerHTML = AjaxResult[0].prix_unitaire;
                         stockArtSaisie[rowNumber - 1] = AjaxResult[0].stock;
+                        prixArtSaisie[rowNumber - 1] = AjaxResult.prix_unitaire;
                         nbreArtSub = AjaxResult.length;
                         for (let i = 0; i < nbreArtSub; i++) {
                             codArtSubst[i] = AjaxResult[i].Num_Sub;
@@ -373,11 +379,13 @@ if ($_SESSION['user'] == True) {
 
         //quantité entée par l'utilisateur
         function showHint1(event) {
-            var nouvelleQteSaisie = event.target.value;
+            var nouvelleQteSaisie = parseInt(event.target.value);
             var rowNumber = event.target.id.substring(event.target.id.indexOf("quantité") + 8, event.target.id.length);
             if (maxRowNumber < rowNumber) {
                 maxRowNumber = rowNumber;
             }
+            qteArtSaisie[rowNumber - 1] = nouvelleQteSaisie;
+
             var codeArticle = "codeArticle" + rowNumber;
             var quantité = "quantité" + rowNumber;
             var disponibility = "disponibility" + rowNumber;
@@ -391,7 +399,7 @@ if ($_SESSION['user'] == True) {
                 return;
             } else {
                 document.getElementById(total).innerHTML = document.getElementById(price).textContent * nouvelleQteSaisie;
-                ajax(codeArticle, price, total, rowNumber);
+                //ajax(codeArticle, price, total, rowNumber);
                 //calcul du Total TTC
                 calculTotalCommande();
                 //Disponibilité
@@ -531,7 +539,56 @@ if ($_SESSION['user'] == True) {
         function hideModal() {
             $('#modalArticleSubstitution').modal("hide");
         }
+        var numeroCommande;
 
+        function envoyerCommande() {
+            if (rowNumber >= 1) {
+                insererEnteteCommande();
+                if (numeroCommande != undefined) {
+                    for (let k = 1; k <= maxRowNumber; k++) {
+                        insererLigneCommande(k);
+                    }
+                }
+            }
+        }
+
+        function insererEnteteCommande() {
+            var userId = '<?php echo $idUtilisateur; ?>';
+            var userId1 = parseInt(userId);
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var ajaxResult = JSON.parse(this.responseText);
+                    console.log(ajaxResult);
+                    numeroCommande = ajaxResult;
+                }
+            };
+            xmlhttp.open(
+                "GET",
+                "insererEnteteCommande.php?userId=" + userId1,
+                true
+            );
+            xmlhttp.send();
+        }
+
+        function insererLigneCommande(k) {
+            console.log(qteArtSaisie);
+            console.log(numeroCommande);
+
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var ajaxResult = JSON.parse(this.responseText);
+                    console.log(ajaxResult);
+                }
+            };
+            xmlhttp.open(
+                "POST",
+                "insererLignesCommande.php?userId=" + userId1,
+                true
+            );
+            xmlhttp.send();
+        }
         <?php
         $q = "SELECT num FROM article";
         $results = mysqli_query($con, $q);
