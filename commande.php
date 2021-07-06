@@ -303,6 +303,7 @@ if ($_SESSION['user'] == True) {
             xmlhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
                     var AjaxResult = JSON.parse(this.responseText);
+
                     if (AjaxResult.prix_unitaire != undefined) {
                         pasArtSubst = true;
                         document.getElementById(price).innerHTML = AjaxResult.prix_unitaire;
@@ -312,7 +313,7 @@ if ($_SESSION['user'] == True) {
                         pasArtSubst = false;
                         document.getElementById(price).innerHTML = AjaxResult[0].prix_unitaire;
                         stockArtSaisie[rowNumber - 1] = AjaxResult[0].stock;
-                        prixArtSaisie[rowNumber - 1] = AjaxResult.prix_unitaire;
+                        prixArtSaisie[rowNumber - 1] = AjaxResult[0].prix_unitaire;
                         nbreArtSub = AjaxResult.length;
                         for (let i = 0; i < nbreArtSub; i++) {
                             codArtSubst[i] = AjaxResult[i].Num_Sub;
@@ -544,11 +545,6 @@ if ($_SESSION['user'] == True) {
         function envoyerCommande() {
             if (rowNumber >= 1) {
                 insererEnteteCommande();
-                if (numeroCommande != undefined) {
-                    for (let k = 1; k <= maxRowNumber; k++) {
-                        insererLigneCommande(k);
-                    }
-                }
             }
         }
 
@@ -559,8 +555,10 @@ if ($_SESSION['user'] == True) {
             xmlhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
                     var ajaxResult = JSON.parse(this.responseText);
-                    console.log(ajaxResult);
-                    numeroCommande = ajaxResult;
+                    numeroCommande = parseInt(ajaxResult[0]);
+                    for (let k = 1; k <= maxRowNumber; k++) {
+                        insererLigneCommande(k);
+                    }
                 }
             };
             xmlhttp.open(
@@ -572,23 +570,34 @@ if ($_SESSION['user'] == True) {
         }
 
         function insererLigneCommande(k) {
-            console.log(qteArtSaisie);
-            console.log(numeroCommande);
 
-            var xmlhttp = new XMLHttpRequest();
-            xmlhttp.onreadystatechange = function() {
+            var codeArticle = insertedCode[k - 1];
+            var quantite = qteArtSaisie[k - 1];
+            var prixUnitaire = prixArtSaisie[k - 1];
+
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("POST", "insererLignesCommande.php", true);
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
-                    var ajaxResult = JSON.parse(this.responseText);
-                    console.log(ajaxResult);
+                    var response = this.responseText;
+                    refrechPage();
                 }
             };
-            xmlhttp.open(
-                "POST",
-                "insererLignesCommande.php?userId=" + userId1,
-                true
-            );
-            xmlhttp.send();
+            var data = {
+                "numero_Commande": numeroCommande,
+                "numero_Ligne": k,
+                "code_Article": codeArticle,
+                "quantite": quantite,
+                "prix_Unitaire": prixUnitaire
+            };
+            xhttp.send(JSON.stringify(data));
         }
+
+        function refrechPage(){
+            location.reload();
+        }
+
         <?php
         $q = "SELECT num FROM article";
         $results = mysqli_query($con, $q);
