@@ -11,7 +11,7 @@ if ($_SESSION['user'] == True) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-        <link rel="stylesheet" href="./css/commande.css" />
+        <link rel="stylesheet" href="./css/styleCommande.css" />
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -297,6 +297,8 @@ if ($_SESSION['user'] == True) {
         var totalCommande = 0;
         var insertedCode = [];
         var c = 0;
+        var test = false;
+
 
         function ajax(codeArticle, price, total, rowNumber) {
             var xmlhttp = new XMLHttpRequest();
@@ -351,7 +353,9 @@ if ($_SESSION['user'] == True) {
                 document.getElementById(total).innerHTML = "0";
                 return;
             } else {
-                ajax(codeArticle, price, total, rowNumber);
+                if (test == true) {
+                    ajax(codeArticle, price, total, rowNumber);
+                }
             }
         }
 
@@ -594,7 +598,7 @@ if ($_SESSION['user'] == True) {
             xhttp.send(JSON.stringify(data));
         }
 
-        function refrechPage(){
+        function refrechPage() {
             location.reload();
         }
 
@@ -652,6 +656,7 @@ if ($_SESSION['user'] == True) {
                                 inp.value = this.getElementsByTagName("input")[0].value;
                                 insertedCode[c] = this.getElementsByTagName("input")[0].value;
                                 c++;
+                                test = true;
                             }
                             /*close the list of autocompleted values,
                             (or any other open lists of autocompleted values:*/
