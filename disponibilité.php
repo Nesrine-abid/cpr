@@ -23,33 +23,33 @@ if ($_SESSION['user'] == True) {
   </body>
 
   <div id="table">
-      <table class="table table-bordered">
-        <thead>
-          <tr class="table-active">
-            <th scope="col">Code Article</th>
-            <th scope="col">Disponibilité</th>
-            <th scope="col">Prix TTC</th>
-          </tr>
-        </thead>
+    <table class="table table-bordered">
+      <thead>
+        <tr class="table-active">
+          <th scope="col">Code Article</th>
+          <th scope="col">Disponibilité</th>
+          <th scope="col">Prix TTC</th>
+        </tr>
+      </thead>
 
-        <tbody>
-          <tr>
-            <td>
-              <div class="form-group col-md-12">
-                <form autocomplete="off">
-                  <div class="autocomplete">
-                    <input type="text" class="form-control" id="codeArticle" onfocus="showHint(event)" onkeyup="showHint(event)">
-                  </div>
-                </form>
-              </div>
-            </td>
-            <td>
-              <p id="disponibility"></p>
-            </td>
-            <td class="price" id="price"></td>
-          </tr>
-        </tbody>
-      </table>
+      <tbody>
+        <tr>
+          <td>
+            <div class="form-group col-md-12">
+              <form autocomplete="off">
+                <div class="autocomplete">
+                  <input type="text" class="form-control" id="codeArticle" onfocus="showHint(event)" onkeyup="showHint(event)">
+                </div>
+              </form>
+            </div>
+          </td>
+          <td>
+            <p id="disponibility"></p>
+          </td>
+          <td id="price"></td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <script>
@@ -73,7 +73,9 @@ if ($_SESSION['user'] == True) {
       xmlhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
           var AjaxResult = JSON.parse(this.responseText);
-          document.getElementById("price").innerHTML = AjaxResult.prix_unitaire;
+          if (AjaxResult.prix_unitaire != undefined) {
+            document.getElementById("price").innerHTML = AjaxResult.prix_unitaire;
+          }
           stock = AjaxResult.stock;
           disponibility();
         }

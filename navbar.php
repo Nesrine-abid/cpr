@@ -66,7 +66,6 @@ include("connexion.php");
         <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
           <li><a class="dropdown-item" href="devis.php">Devis</a></li>
           <li><a class="dropdown-item" href="commande.php">Commande</a></li>
-          <li><a class="dropdown-item" href="retour.php">Demande Retour</a></li>
         </ul>
       </li>
 
