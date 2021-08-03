@@ -29,7 +29,7 @@ if ($_SESSION['user'] == True) {
         <tbody>
           <?php
           $idUtilisateur = $_SESSION["userId"];
-          $select = "SELECT Num_Commande , Date_Commande from entete_commande where Code_Client='$idUtilisateur'";
+          $select = "SELECT Num_Commande , Date_Commande ,montant_TTC from entete_commande where Code_Client='$idUtilisateur'";
           $result1 = mysqli_query($con, $select);
           while ($r = mysqli_fetch_assoc($result1)) {
           ?>
@@ -38,10 +38,10 @@ if ($_SESSION['user'] == True) {
                 <p id="numCommande">Commande N° <?php echo json_encode((int)$r["Num_Commande"]); ?></p>
               </td>
               <td>
-                <p id="date"><?php echo json_encode($r["Date_Commande"]); ?></p>
+                <p id="date"><?php echo trim(json_encode($r["Date_Commande"]),'"'); ?></p>
               </td>
               <td>
-                <p id="totale"></p>
+                <p id="totale"><?php echo json_encode((float)$r["montant_TTC"]); ?></p>
               </td>
               <td>
                 <p id="Statue">Ouvert</p>

@@ -9,7 +9,7 @@ $date = date('h:i:s');
 $in = file_get_contents('php://input');
 $decoded = json_decode($in, true);
 
-$insertID = "INSERT INTO entete_commande (Num_Commande,Code_Client,Date_Commande,Heure_Commande,Statut,type_document,montant_TTC) VALUES (null,'" . $decoded['userId']. "',Sysdate(),'" . $date . "','Lancé','Commande','" . $decoded['totalCommande']. "')";
+$insertID = "INSERT INTO entete_commande (Num_Commande,Code_Client,Date_Commande,Heure_Commande,Statut,type_document) VALUES (null,'" . $decoded['userId']. "',Sysdate(),'" . $date . "','Lancé','Devis')";
 mysqli_query($con, $insertID);
 
 $getNumCommande = "SELECT max(Num_Commande) FROM entete_Commande where Code_Client='" . $decoded['userId']. "'";
