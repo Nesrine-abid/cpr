@@ -20,7 +20,11 @@ if ($_SESSION['user'] == True) {
     </head>
 
     <body>
-        <?php $idUtilisateur = $_SESSION["userId"]; ?>
+        <?php $idUtilisateur = $_SESSION["userId"];
+        $nomUtilisateur = $_SESSION["username"];
+        $select = "SELECT taux_Remise from promo where nom_Utilisateur='$nomUtilisateur' ";
+        $result1 = mysqli_query($con, $select);
+        $r = mysqli_fetch_assoc($result1) ?>
 
         <div id="chartdiv" class="col-md-6"></div>
         <div>
@@ -69,7 +73,7 @@ if ($_SESSION['user'] == True) {
                                     <p id="disponibility<?php echo $nombre_de_lignes; ?>"></p>
                                 </td>
                                 <td class="priceAndTotal" id="price<?php echo $nombre_de_lignes; ?>"></td>
-                                <td id="taux">Taux de remise</td>
+                                <td id="taux"><?php echo json_encode((int)$r["taux_Remise"]); ?>%</td>
                                 <td class="priceAndTotal" id="total<?php echo $nombre_de_lignes; ?>"></td>
                             </tr>
                         </tbody>
@@ -117,7 +121,7 @@ if ($_SESSION['user'] == True) {
                                     <p id="disponibility<?php echo $nombre_de_lignes; ?>"></p>
                                 </td>
                                 <td class="priceAndTotal" id="price<?php echo $nombre_de_lignes; ?>"></td>
-                                <td>Taux de remise</td>
+                                <td><?php echo json_encode((int)$r["taux_Remise"]); ?>%</td>
                                 <td class="priceAndTotal" id="total<?php echo $nombre_de_lignes; ?>"></td>
                             </tr>
                         </tbody>
@@ -165,7 +169,7 @@ if ($_SESSION['user'] == True) {
                                     <p id="disponibility<?php echo $nombre_de_lignes; ?>"></p>
                                 </td>
                                 <td class="priceAndTotal" id="price<?php echo $nombre_de_lignes; ?>"></td>
-                                <td>Taux de remise</td>
+                                <td><?php echo json_encode((int)$r["taux_Remise"]); ?>%</td>
                                 <td class="priceAndTotal" id="total<?php echo $nombre_de_lignes; ?>"></td>
                             </tr>
                         </tbody>
@@ -212,7 +216,7 @@ if ($_SESSION['user'] == True) {
                                     <p id="disponibility<?php echo $nombre_de_lignes; ?>"></p>
                                 </td>
                                 <td class="priceAndTotal" id="price<?php echo $nombre_de_lignes; ?>"></td>
-                                <td>Taux de remise</td>
+                                <td><?php echo json_encode((int)$r["taux_Remise"]); ?>%</td>
                                 <td class="priceAndTotal" id="total<?php echo $nombre_de_lignes; ?>"></td>
                             </tr>
                         </tbody>
