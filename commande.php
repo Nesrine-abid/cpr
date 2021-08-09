@@ -26,228 +26,445 @@ if ($_SESSION['user'] == True) {
         $result1 = mysqli_query($con, $select);
         $r = mysqli_fetch_assoc($result1) ?>
 
-        <div id="chartdiv" class="col-md-6"></div>
-        <div>
-            <h4 class="card-title" id="total-TTC">Total TTC</h4>
-            <ul class="list-group" id="total-TTC-Output">
-                <li class="list-group-item" id="totalCommande">0</li>
-            </ul>
-        </div>
-        <div id="tables">
-            <div class="col" id="tab1" style="display:block">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr class="table-active">
-                            <th scope="col">N°</th>
-                            <th scope="col">Code Article</th>
-                            <th scope="col">Quantité</th>
-                            <th scope="col">Disponibilité</th>
-                            <th scope="col">Prix TTC</th>
-                            <th scope="col">Taux De Remise</th>
-                            <th scope="col">Total TTC</th>
-                        </tr>
-                    </thead>
-                    <?php
-                    $nombre_de_lignes = 1;
-                    while ($nombre_de_lignes <= 5) {
-                    ?>
-                        <tbody>
-                            <tr>
-                                <th scope="row">Pièce<?php echo $nombre_de_lignes; ?></th>
-                                <td>
-                                    <div class="form-group col-md-12">
-                                        <form autocomplete="off">
-                                            <div class="autocomplete">
-                                                <input type="text" class="form-control" id="codeArticle<?php echo $nombre_de_lignes; ?>" onfocus="showHint(event)" onkeyup="showHint(event)">
-                                            </div>
-                                        </form>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="form-group col-md-8">
-                                        <input id="quantité<?php echo $nombre_de_lignes; ?>" type="number" class="form-control" value="0" min="0" onchange="showHint1(event)">
-                                    </div>
-                                    <div id="bloquage<?php echo $nombre_de_lignes; ?>"></div>
-                                </td>
-                                <td>
-                                    <p id="disponibility<?php echo $nombre_de_lignes; ?>"></p>
-                                </td>
-                                <td class="priceAndTotal" id="price<?php echo $nombre_de_lignes; ?>"></td>
-                                <td id="taux"><?php echo json_encode((int)$r["taux_Remise"]); ?>%</td>
-                                <td class="priceAndTotal" id="total<?php echo $nombre_de_lignes; ?>"></td>
-                            </tr>
-                        </tbody>
-                    <?php $nombre_de_lignes++;
-                    } ?>
-                </table>
+        <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
+        <script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
+        <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
+        <script src="//www.amcharts.com/lib/4/themes/animated.js"></script>
+
+        <?php
+        $select2 = "SELECT encours_Autorise,solde from utilisateurs where nom='$nomUtilisateur' ";
+        $result2 = mysqli_query($con, $select2);
+        $r2 = mysqli_fetch_assoc($result2) ?>
+        <script type="text/javascript">
+            am4core.useTheme(am4themes_animated);
+            var chartMin = 0;
+            var chartMax = '<?php echo json_encode((int)$r2["encours_Autorise"]); ?>' * 1;
+            console.log('<?php echo json_encode($r2); ?>')
+            var data = {
+                score: 52.7,
+                gradingData: [{
+                        title: " Bad",
+                        advice: "Market is disappearing",
+                        color: "#43A047",
+                        lowScore: 0,
+                        highScore: parseFloat('<?php echo json_encode((int)$r2["encours_Autorise"]); ?>') * 0.4
+                    },
+                    {
+                        title: "Warning",
+                        advice: "Warning - underdelivering",
+                        color: "#FB8C00",
+                        lowScore: parseFloat('<?php echo json_encode((int)$r2["encours_Autorise"]); ?>') * 0.4,
+                        highScore: parseFloat('<?php echo json_encode((int)$r2["encours_Autorise"]); ?>') * 0.8
+                    },
+                    {
+                        title: "OK",
+                        advice: "Well done",
+                        color: "#E53935",
+                        lowScore: parseFloat('<?php echo json_encode((int)$r2["encours_Autorise"]); ?>') * 0.8,
+                        highScore: parseFloat('<?php echo json_encode((int)$r2["encours_Autorise"]); ?>') * 1
+                    }
+                ]
+            };
+
+            /**
+            Grading Lookup
+             */
+            function lookUpGrade(lookupScore, grades) {
+                // Only change code below this line
+                for (var i = 0; i < grades.length; i++) {
+                    if (
+                        grades[i].lowScore < lookupScore &&
+                        grades[i].highScore >= lookupScore
+                    ) {
+                        return grades[i];
+                    }
+                }
+                return null;
+            }
+
+            // create chart
+            var chart = am4core.create("chartdiv", am4charts.GaugeChart);
+            chart.hiddenState.properties.opacity = 0;
+            chart.fontSize = 11;
+            chart.innerRadius = am4core.percent(80);
+            chart.resizable = true;
+
+            /**
+             * Normal axis
+             */
+            var axis = chart.xAxes.push(new am4charts.ValueAxis());
+            axis.min = chartMin;
+            axis.max = chartMax;
+            axis.strictMinMax = true;
+            axis.renderer.radius = am4core.percent(80);
+            axis.renderer.inside = true;
+            axis.renderer.line.strokeOpacity = 0;
+            axis.renderer.ticks.template.disabled = false;
+            axis.renderer.ticks.template.strokeOpacity = 0;
+            axis.renderer.ticks.template.strokeWidth = 0.5;
+            axis.renderer.ticks.template.length = 5;
+            axis.renderer.grid.template.disabled = true;
+            axis.renderer.labels.template.radius = am4core.percent(15);
+            axis.renderer.labels.template.fontSize = "0.9em";
+            axis.renderer.labels.template.fill = am4core.color("#757575");
+
+            /**
+             * Axis for ranges
+             */
+            var axis2 = chart.xAxes.push(new am4charts.ValueAxis());
+            axis2.min = chartMin;
+            axis2.max = chartMax;
+            axis2.renderer.radius = am4core.percent(105); // figure out how to move labels instead
+            axis2.strictMinMax = true;
+            axis2.renderer.labels.template.disabled = true;
+            axis2.renderer.ticks.template.disabled = true;
+            axis2.renderer.grid.template.disabled = false;
+            axis2.renderer.grid.template.opacity = 0;
+            axis2.renderer.labels.template.bent = true;
+            axis2.renderer.labels.template.fill = am4core.color("#000");
+            axis2.renderer.labels.template.fontWeight = "bold";
+            axis2.renderer.labels.template.fillOpacity = 0; //hide
+
+            /**
+            Ranges
+            */
+
+            for (let grading of data.gradingData) {
+                var range = axis2.axisRanges.create();
+                range.axisFill.fill = am4core.color(grading.color);
+                range.axisFill.fillOpacity = 1;
+                range.axisFill.zIndex = -1;
+                range.value = grading.lowScore > chartMin ? grading.lowScore : chartMin;
+                range.endValue = grading.highScore < chartMax ? grading.highScore : chartMax;
+                range.grid.strokeOpacity = 0;
+                range.stroke = am4core.color(grading.color).lighten(-0.1);
+                range.label.inside = true;
+                range.label.text = grading.title.toUpperCase();
+                range.label.inside = true;
+                range.label.location = 0.5;
+                range.label.inside = true;
+                range.label.radius = am4core.percent(10);
+                range.label.paddingBottom = -5; // ~half font size
+                range.label.fontSize = "0.9em";
+            }
+            var matchingGrade = lookUpGrade(data.score, data.gradingData);
+
+
+            /**
+             * Metric Value       valeur hamra
+             */
+
+            var labelMetricValue = chart.radarContainer.createChild(am4core.Label);
+            var metricValue=parseFloat('<?php echo json_encode((int)$r2["solde"]); ?>');
+            labelMetricValue.isMeasured = false;
+            labelMetricValue.fontSize = "4em";
+            labelMetricValue.x = am4core.percent(50);
+            labelMetricValue.paddingBottom = 15;
+            labelMetricValue.horizontalCenter = "middle";
+            labelMetricValue.verticalCenter = "bottom";
+            labelMetricValue.text = metricValue;
+            labelMetricValue.fill = am4core.color(matchingGrade.color);
+
+            /**
+             * Advice
+             */
+
+            //var label2 = chart.radarContainer.createChild(am4core.Label);
+            var labelAdvice = chart.createChild(am4core.Label);
+            labelAdvice.isMeasured = false;
+            labelAdvice.fontSize = "1em";
+            //labelAdvice.paddingTop = 150;
+            labelAdvice.horizontalCenter = "middle";
+            labelAdvice.verticalCenter = "bottom";
+            //labelAdvice.text = matchingGrade.title.toUpperCase();
+            labelAdvice.text = "hello";
+            labelAdvice.fill = am4core.color(matchingGrade.color);
+            labelAdvice.dx = 280;
+            labelAdvice.dy = 340;
+
+            /**
+             * Hand      lebra
+             */
+            var hand = chart.hands.push(new am4charts.ClockHand());
+            hand.axis = axis2;
+            hand.radius = am4core.percent(85);
+            hand.innerRadius = am4core.percent(50);
+            hand.startWidth = 10;
+            hand.pixelHeight = 10;
+            hand.pin.disabled = true;
+            hand.value = data.score;
+            hand.fill = am4core.color("#444");
+            hand.stroke = am4core.color("#000");
+
+            hand.events.on("positionchanged", function() {
+                // var t = axis2.positionToValue(hand.currentPosition).toFixed(0);
+
+                var value2 = axis.positionToValue(hand.currentPosition);
+
+                var matchingGrade = lookUpGrade(axis.positionToValue(hand.currentPosition), data.gradingData);
+                labelAdvice.text = matchingGrade.advice.toUpperCase();
+                labelAdvice.fill = am4core.color(matchingGrade.color);
+                labelAdvice.stroke = am4core.color(matchingGrade.color);
+                labelMetricValue.fill = am4core.color(matchingGrade.color);
+
+            })
+
+                hand.showValue(metricValue, 10, am4core.ease.cubicOut); //tbedel valeur elebra
+                axis2.axisRanges.values[0].axisFill.fillOpacity = 0.8;
+                axis2.axisRanges.values[1].axisFill.fillOpacity = 0.6;
+                axis2.axisRanges.values[2].axisFill.fillOpacity = 0.4;
+        </script>
+
+        <style type="text/css">
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            }
+
+            #chartdiv {
+                width: 400px;
+                height: 250px;
+            }
+        </style>
+        <div class="container-fluid">
+            <div class="row">
+                <div id="chartdiv" class="col-md-8"></div>
+                <div class="col-md-4">
+                    <h4 class="card-title" id="total-TTC">Total TTC</h4>
+                    <ul class="list-group" id="total-TTC-Output">
+                        <li class="list-group-item" id="totalCommande">0</li>
+                    </ul>
+                </div>
             </div>
-
-            <div class="col" id="tab2">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr class="table-active">
-                            <th scope="col">N°</th>
-                            <th scope="col">Code Article</th>
-                            <th scope="col">Quantité</th>
-                            <th scope="col">Disponibilité</th>
-                            <th scope="col">Prix HT</th>
-                            <th scope="col">Taux De Remise</th>
-                            <th scope="col">Total HT</th>
-                        </tr>
-                    </thead>
-                    <?php
-                    while ($nombre_de_lignes <= 10) {
-                    ?>
-
-                        <tbody>
-                            <tr>
-                                <th scope="row">Pièce<?php echo $nombre_de_lignes; ?></th>
-                                <td>
-                                    <div class="form-group col-md-12">
-                                        <form autocomplete="off">
-                                            <div class="autocomplete">
-                                                <input type="text" class="form-control" id="codeArticle<?php echo $nombre_de_lignes; ?>" onfocus="showHint(event)" onkeyup="showHint(event)">
-                                            </div>
-                                        </form>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="form-group col-md-8">
-                                        <input id="quantité<?php echo $nombre_de_lignes; ?>" type="number" class="form-control" value="0" min="0" onchange="showHint1(event)">
+            <div class="row" id="tables">
+                <div class="col" id="tab1" style="display:block">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr class="table-active">
+                                <th scope="col">N°</th>
+                                <th scope="col">Code Article</th>
+                                <th scope="col">Quantité</th>
+                                <th scope="col">Disponibilité</th>
+                                <th scope="col">Prix TTC</th>
+                                <th scope="col">Taux De Remise</th>
+                                <th scope="col">Total TTC</th>
+                            </tr>
+                        </thead>
+                        <?php
+                        $nombre_de_lignes = 1;
+                        while ($nombre_de_lignes <= 5) {
+                        ?>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">Pièce<?php echo $nombre_de_lignes; ?></th>
+                                    <td>
+                                        <div class="form-group col-md-12">
+                                            <form autocomplete="off">
+                                                <div class="autocomplete">
+                                                    <input type="text" class="form-control" id="codeArticle<?php echo $nombre_de_lignes; ?>" onfocus="showHint(event)" onkeyup="showHint(event)">
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group col-md-8">
+                                            <input id="quantité<?php echo $nombre_de_lignes; ?>" type="number" class="form-control" value="0" min="0" onchange="showHint1(event)">
+                                        </div>
                                         <div id="bloquage<?php echo $nombre_de_lignes; ?>"></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <p id="disponibility<?php echo $nombre_de_lignes; ?>"></p>
-                                </td>
-                                <td class="priceAndTotal" id="price<?php echo $nombre_de_lignes; ?>"></td>
-                                <td><?php echo json_encode((int)$r["taux_Remise"]); ?>%</td>
-                                <td class="priceAndTotal" id="total<?php echo $nombre_de_lignes; ?>"></td>
+                                    </td>
+                                    <td>
+                                        <p id="disponibility<?php echo $nombre_de_lignes; ?>"></p>
+                                    </td>
+                                    <td class="priceAndTotal" id="price<?php echo $nombre_de_lignes; ?>"></td>
+                                    <td id="taux"><?php echo json_encode((int)$r["taux_Remise"]); ?>%</td>
+                                    <td class="priceAndTotal" id="total<?php echo $nombre_de_lignes; ?>"></td>
+                                </tr>
+                            </tbody>
+                        <?php $nombre_de_lignes++;
+                        } ?>
+                    </table>
+                </div>
+
+                <div class="col" id="tab2">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr class="table-active">
+                                <th scope="col">N°</th>
+                                <th scope="col">Code Article</th>
+                                <th scope="col">Quantité</th>
+                                <th scope="col">Disponibilité</th>
+                                <th scope="col">Prix HT</th>
+                                <th scope="col">Taux De Remise</th>
+                                <th scope="col">Total HT</th>
                             </tr>
-                        </tbody>
-                        </tbody>
-                    <?php $nombre_de_lignes++;
-                    } ?>
-                </table>
+                        </thead>
+                        <?php
+                        while ($nombre_de_lignes <= 10) {
+                        ?>
+
+                            <tbody>
+                                <tr>
+                                    <th scope="row">Pièce<?php echo $nombre_de_lignes; ?></th>
+                                    <td>
+                                        <div class="form-group col-md-12">
+                                            <form autocomplete="off">
+                                                <div class="autocomplete">
+                                                    <input type="text" class="form-control" id="codeArticle<?php echo $nombre_de_lignes; ?>" onfocus="showHint(event)" onkeyup="showHint(event)">
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group col-md-8">
+                                            <input id="quantité<?php echo $nombre_de_lignes; ?>" type="number" class="form-control" value="0" min="0" onchange="showHint1(event)">
+                                            <div id="bloquage<?php echo $nombre_de_lignes; ?>"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <p id="disponibility<?php echo $nombre_de_lignes; ?>"></p>
+                                    </td>
+                                    <td class="priceAndTotal" id="price<?php echo $nombre_de_lignes; ?>"></td>
+                                    <td><?php echo json_encode((int)$r["taux_Remise"]); ?>%</td>
+                                    <td class="priceAndTotal" id="total<?php echo $nombre_de_lignes; ?>"></td>
+                                </tr>
+                            </tbody>
+                            </tbody>
+                        <?php $nombre_de_lignes++;
+                        } ?>
+                    </table>
+                </div>
+
+                <div class="col" id="tab3">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr class="table-active">
+                                <th scope="col">N°</th>
+                                <th scope="col">Code Article</th>
+                                <th scope="col">Quantité</th>
+                                <th scope="col">Disponibilité</th>
+                                <th scope="col">Prix HT</th>
+                                <th scope="col">Taux De Remise</th>
+                                <th scope="col">Total HT</th>
+                            </tr>
+                        </thead>
+                        <?php
+                        while ($nombre_de_lignes <= 15) {
+                        ?>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">Pièce<?php echo $nombre_de_lignes; ?></th>
+                                    <td>
+                                        <div class="form-group col-md-12">
+                                            <form autocomplete="off">
+                                                <div class="autocomplete">
+                                                    <input type="text" class="form-control" id="codeArticle<?php echo $nombre_de_lignes; ?>" onfocus="showHint(event)" onkeyup="showHint(event)">
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group col-md-8">
+                                            <input id="quantité<?php echo $nombre_de_lignes; ?>" type="number" class="form-control" value="0" min="0" onchange="showHint1(event)">
+                                            <div id="bloquage<?php echo $nombre_de_lignes; ?>"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <p id="disponibility<?php echo $nombre_de_lignes; ?>"></p>
+                                    </td>
+                                    <td class="priceAndTotal" id="price<?php echo $nombre_de_lignes; ?>"></td>
+                                    <td><?php echo json_encode((int)$r["taux_Remise"]); ?>%</td>
+                                    <td class="priceAndTotal" id="total<?php echo $nombre_de_lignes; ?>"></td>
+                                </tr>
+                            </tbody>
+                        <?php $nombre_de_lignes++;
+                        } ?>
+                    </table>
+                </div>
+
+                <div class="col" id="tab4">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr class="table-active">
+                                <th scope="col">N°</th>
+                                <th scope="col">Code Article</th>
+                                <th scope="col">Quantité</th>
+                                <th scope="col">Disponibilité</th>
+                                <th scope="col">Prix HT</th>
+                                <th scope="col">Taux De Remise</th>
+                                <th scope="col">Total HT</th>
+                            </tr>
+                        </thead>
+                        <?php
+                        while ($nombre_de_lignes <= 20) {
+                        ?>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">Pièce<?php echo $nombre_de_lignes; ?></th>
+                                    <td>
+                                        <div class="form-group col-md-12">
+                                            <form autocomplete="off">
+                                                <div class="autocomplete">
+                                                    <input type="text" class="form-control" id="codeArticle<?php echo $nombre_de_lignes; ?>" onfocus="showHint(event)" onkeyup="showHint(event)">
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group col-md-8">
+                                            <input id="quantité<?php echo $nombre_de_lignes; ?>" type="number" class="form-control" value="0" min="0" onchange="showHint1(event)">
+                                            <div id="bloquage<?php echo $nombre_de_lignes; ?>"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <p id="disponibility<?php echo $nombre_de_lignes; ?>"></p>
+                                    </td>
+                                    <td class="priceAndTotal" id="price<?php echo $nombre_de_lignes; ?>"></td>
+                                    <td><?php echo json_encode((int)$r["taux_Remise"]); ?>%</td>
+                                    <td class="priceAndTotal" id="total<?php echo $nombre_de_lignes; ?>"></td>
+                                </tr>
+                            </tbody>
+                        <?php $nombre_de_lignes++;
+                        } ?>
+                    </table>
+                </div>
             </div>
 
-            <div class="col" id="tab3">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr class="table-active">
-                            <th scope="col">N°</th>
-                            <th scope="col">Code Article</th>
-                            <th scope="col">Quantité</th>
-                            <th scope="col">Disponibilité</th>
-                            <th scope="col">Prix HT</th>
-                            <th scope="col">Taux De Remise</th>
-                            <th scope="col">Total HT</th>
-                        </tr>
-                    </thead>
-                    <?php
-                    while ($nombre_de_lignes <= 15) {
-                    ?>
-                        <tbody>
-                            <tr>
-                                <th scope="row">Pièce<?php echo $nombre_de_lignes; ?></th>
-                                <td>
-                                    <div class="form-group col-md-12">
-                                        <form autocomplete="off">
-                                            <div class="autocomplete">
-                                                <input type="text" class="form-control" id="codeArticle<?php echo $nombre_de_lignes; ?>" onfocus="showHint(event)" onkeyup="showHint(event)">
-                                            </div>
-                                        </form>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="form-group col-md-8">
-                                        <input id="quantité<?php echo $nombre_de_lignes; ?>" type="number" class="form-control" value="0" min="0" onchange="showHint1(event)">
-                                        <div id="bloquage<?php echo $nombre_de_lignes; ?>"></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <p id="disponibility<?php echo $nombre_de_lignes; ?>"></p>
-                                </td>
-                                <td class="priceAndTotal" id="price<?php echo $nombre_de_lignes; ?>"></td>
-                                <td><?php echo json_encode((int)$r["taux_Remise"]); ?>%</td>
-                                <td class="priceAndTotal" id="total<?php echo $nombre_de_lignes; ?>"></td>
-                            </tr>
-                        </tbody>
-                    <?php $nombre_de_lignes++;
-                    } ?>
-                </table>
+            <div class="row" id="bottonEnvoyer">
+                <div class="col-sm">
+                </div>
+                <div class="col-sm">
+                    <button type="button" class="btn btn-danger" onclick="envoyerCommande()">Envoyer</button>
+                </div>
+                <div class="col-sm">
+                </div>
             </div>
 
-            <div class="col" id="tab4">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr class="table-active">
-                            <th scope="col">N°</th>
-                            <th scope="col">Code Article</th>
-                            <th scope="col">Quantité</th>
-                            <th scope="col">Disponibilité</th>
-                            <th scope="col">Prix HT</th>
-                            <th scope="col">Taux De Remise</th>
-                            <th scope="col">Total HT</th>
-                        </tr>
-                    </thead>
-                    <?php
-                    while ($nombre_de_lignes <= 20) {
-                    ?>
-                        <tbody>
-                            <tr>
-                                <th scope="row">Pièce<?php echo $nombre_de_lignes; ?></th>
-                                <td>
-                                    <div class="form-group col-md-12">
-                                        <form autocomplete="off">
-                                            <div class="autocomplete">
-                                                <input type="text" class="form-control" id="codeArticle<?php echo $nombre_de_lignes; ?>" onfocus="showHint(event)" onkeyup="showHint(event)">
-                                            </div>
-                                        </form>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="form-group col-md-8">
-                                        <input id="quantité<?php echo $nombre_de_lignes; ?>" type="number" class="form-control" value="0" min="0" onchange="showHint1(event)">
-                                        <div id="bloquage<?php echo $nombre_de_lignes; ?>"></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <p id="disponibility<?php echo $nombre_de_lignes; ?>"></p>
-                                </td>
-                                <td class="priceAndTotal" id="price<?php echo $nombre_de_lignes; ?>"></td>
-                                <td><?php echo json_encode((int)$r["taux_Remise"]); ?>%</td>
-                                <td class="priceAndTotal" id="total<?php echo $nombre_de_lignes; ?>"></td>
-                            </tr>
-                        </tbody>
-                    <?php $nombre_de_lignes++;
-                    } ?>
-                </table>
+            <div class="row" style="text-align: center;">
+                <div class="col-sm">
+                </div>
+                <div class="col-sm">
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item">
+                                <a class="page-link" onclick=Previous() aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item"><a class="page-link" onclick=showTab1()>1</a></li>
+                            <li class="page-item"><a class="page-link" onclick=showTab2()>2</a></li>
+                            <li class="page-item"><a class="page-link" onclick=showTab3()>3</a></li>
+                            <li class="page-item"><a class="page-link" onclick=showTab4()>4</a></li>
+                            <li class="page-item">
+                                <a class="page-link" onclick=next() aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="col-sm">
+                </div>
             </div>
         </div>
-
-        <div>
-            <button type="button" class="btn btn-danger" onclick="envoyerCommande()">Envoyer</button>
-        </div>
-
-        <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-center">
-                <li class="page-item">
-                    <a class="page-link" onclick=Previous() aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
-                <li class="page-item"><a class="page-link" onclick=showTab1()>1</a></li>
-                <li class="page-item"><a class="page-link" onclick=showTab2()>2</a></li>
-                <li class="page-item"><a class="page-link" onclick=showTab3()>3</a></li>
-                <li class="page-item"><a class="page-link" onclick=showTab4()>4</a></li>
-                <li class="page-item">
-                    <a class="page-link" onclick=next() aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
 
         <div class="modal" tabindex="-1" role="dialog" id="modalArticleSubstitution">
             <div class="modal-dialog" role="document">
@@ -406,8 +623,8 @@ if ($_SESSION['user'] == True) {
             document.getElementById("totalCommande").innerHTML = totalCommande;
             document.getElementById("totalCommande").style.color = "green";
             document.getElementById("totalCommande").style.fontSize = 20;
-
-
+            labelMetricValue.text = metricValue+totalCommande;
+            hand.showValue(metricValue+totalCommande, 10, am4core.ease.cubicOut);
         }
 
         //quantité entée par l'utilisateur
@@ -425,13 +642,14 @@ if ($_SESSION['user'] == True) {
             var price = "price" + rowNumber;
             var total = "total" + rowNumber;
             var bloquage = "bloquage" + rowNumber;
+            var tauxDeRemise = '<?php echo $r["taux_Remise"]; ?>';
 
             if (document.getElementById(codeArticle).value.length == 0) {
                 document.getElementById(price).innerHTML = "0";
                 document.getElementById(total).innerHTML = "0";
                 return;
             } else {
-                document.getElementById(total).innerHTML = parseFloat(document.getElementById(price).textContent) * parseInt(nouvelleQteSaisie);
+                document.getElementById(total).innerHTML = (parseFloat(document.getElementById(price).textContent) * (100 - tauxDeRemise) / 100) * parseInt(nouvelleQteSaisie);
 
                 //ajax(codeArticle, price, total, rowNumber);
                 //calcul du Total TTC

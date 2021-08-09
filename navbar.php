@@ -49,7 +49,7 @@ include("connexion.php");
   </div>
 </div>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light" id="navbarBottom">
+<nav class="navbar navbar-expand-lg navbar-light bg-light" id="navbarBottom" style="margin-bottom: 0px;">
   <div class="collapse navbar-collapse" id="navbarSupportedContent1">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item dropdown">

@@ -3,9 +3,7 @@
   box-sizing: border-box;
 }
 body {
-  font: 16px Arial;  
-  text-align: center;
-
+  font: 16px Arial;
 }
 #tables {
   margin-right: 5em;
@@ -27,12 +25,15 @@ body {
   text-align: right !important;
 }
 #total-TTC {
-  margin-left: 70em;
+  margin-left: 200px !important;
 }
 #total-TTC-Output {
   max-width: 150px;
   text-align: right;
-  margin-left: 95em;
+  margin-left: 150px !important;
+}
+#bottonEnvoyer{
+  text-align: center;
 }
 /*the container must be positioned relative:*/
 .autocomplete {
