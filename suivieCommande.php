@@ -29,7 +29,7 @@ if ($_SESSION['user'] == True) {
         <tbody>
           <?php
           $idUtilisateur = $_SESSION["userId"];
-          $select = "SELECT Num_Commande , Date_Commande ,montant_TTC from entete_commande where Code_Client='$idUtilisateur'";
+          $select = "SELECT Num_Commande , Date_Commande ,montant_TTC from entete_commande where Code_Client='$idUtilisateur' and type_document='Commande'";
           $result1 = mysqli_query($con, $select);
           while ($r = mysqli_fetch_assoc($result1)) {
           ?>

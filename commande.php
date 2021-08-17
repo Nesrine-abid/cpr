@@ -39,7 +39,6 @@ if ($_SESSION['user'] == True) {
             am4core.useTheme(am4themes_animated);
             var chartMin = 0;
             var chartMax = '<?php echo json_encode((int)$r2["encours_Autorise"]); ?>' * 1;
-            console.log('<?php echo json_encode($r2); ?>')
             var data = {
                 score: 52.7,
                 gradingData: [{
@@ -155,7 +154,7 @@ if ($_SESSION['user'] == True) {
              */
 
             var labelMetricValue = chart.radarContainer.createChild(am4core.Label);
-            var metricValue=parseFloat('<?php echo json_encode((int)$r2["solde"]); ?>');
+            var metricValue = parseFloat('<?php echo json_encode((int)$r2["solde"]); ?>');
             labelMetricValue.isMeasured = false;
             labelMetricValue.fontSize = "4em";
             labelMetricValue.x = am4core.percent(50);
@@ -209,10 +208,10 @@ if ($_SESSION['user'] == True) {
 
             })
 
-                hand.showValue(metricValue, 10, am4core.ease.cubicOut); //tbedel valeur elebra
-                axis2.axisRanges.values[0].axisFill.fillOpacity = 0.8;
-                axis2.axisRanges.values[1].axisFill.fillOpacity = 0.6;
-                axis2.axisRanges.values[2].axisFill.fillOpacity = 0.4;
+            hand.showValue(metricValue, 10, am4core.ease.cubicOut); //tbedel valeur elebra
+            axis2.axisRanges.values[0].axisFill.fillOpacity = 0.8;
+            axis2.axisRanges.values[1].axisFill.fillOpacity = 0.6;
+            axis2.axisRanges.values[2].axisFill.fillOpacity = 0.4;
         </script>
 
         <style type="text/css">
@@ -227,7 +226,14 @@ if ($_SESSION['user'] == True) {
         </style>
         <div class="container-fluid">
             <div class="row">
-                <div id="chartdiv" class="col-md-8"></div>
+                <div id="chartdiv" class="col-md-6"> </div>
+                <div class="col-md-2">
+                    <h4 id="depassement">Depassement</h4>
+                    <ul class="list-group">
+                        <li class="list-group-item" style="text-align: right;" id="depassementValue">0</li>
+                    </ul>
+                </div>
+
                 <div class="col-md-4">
                     <h4 class="card-title" id="total-TTC">Total TTC</h4>
                     <ul class="list-group" id="total-TTC-Output">
@@ -505,7 +511,6 @@ if ($_SESSION['user'] == True) {
         var rowNumber = 0;
         var maxRowNumber = 0;
         var nouvelleQteSaisie = 0;
-
         var stockArtSaisie = []; //le stock de l'article ajouté dans le tableau
         var qteArtSaisie = [];
         var prixArtSaisie = [];
@@ -521,8 +526,38 @@ if ($_SESSION['user'] == True) {
         var totalCommande = 0;
         var insertedCode = [];
         var c = 0;
-        var test = false;
+        var isCodeArticle = false;
         var numeroCommande;
+        var tauxDeRemise = '<?php echo $r["taux_Remise"]; ?>';
+
+        //code article entée par l'utilisateur
+        function showHint(event) {
+            if (event.target.id.includes("codeArticle")) {
+                rowNumber = event.target.id.substring(event.target.id.indexOf("codeArticle") + 11, event.target.id.length);
+            } else {
+                rowNumber = event.target.parentNode.id.substring(
+                    event.target.parentNode.id.indexOf("codeArticle") + 11,
+                    event.target.parentNode.id.indexOf("autocomplete-list")
+                );
+            }
+            if (maxRowNumber < rowNumber) {
+                maxRowNumber = rowNumber;
+            }
+            codeArticle = "codeArticle" + rowNumber;
+            price = "price" + rowNumber;
+            total = "total" + rowNumber;
+
+            if (document.getElementById(codeArticle).value.length == 0) {
+                document.getElementById(price).innerHTML = "0";
+                document.getElementById(total).innerHTML = "0";
+                return;
+            } else {
+                if (isCodeArticle == true) {
+                    ajax(codeArticle, price, total, rowNumber);
+                }
+                isCodeArticle = false;
+            }
+        }
 
         function ajax(codeArticle, price, total, rowNumber) {
             var xmlhttp = new XMLHttpRequest();
@@ -573,87 +608,28 @@ if ($_SESSION['user'] == True) {
                 document.getElementById(disponibility).style.padding = 10;
             }
         }
-        //code article entée par l'utilisateur
-        function showHint(event) {
-            if (event.target.id.includes("codeArticle")) {
-                rowNumber = event.target.id.substring(event.target.id.indexOf("codeArticle") + 11, event.target.id.length);
-            } else {
-                rowNumber = event.target.parentNode.id.substring(
-                    event.target.parentNode.id.indexOf("codeArticle") + 11,
-                    event.target.parentNode.id.indexOf("autocomplete-list")
-                );
-            }
-            if (maxRowNumber < rowNumber) {
-                maxRowNumber = rowNumber;
-            }
-            var codeArticle = "codeArticle" + rowNumber;
-            var price = "price" + rowNumber;
-            var total = "total" + rowNumber;
-            if (document.getElementById(codeArticle).value.length == 0) {
-                document.getElementById(price).innerHTML = "0";
-                document.getElementById(total).innerHTML = "0";
-                return;
-            } else {
-                if (test == true) {
-                    ajax(codeArticle, price, total, rowNumber);
-                }
-            }
-        }
-
-        function initialisation(rowNumber) {
-            var quantité = "quantité" + rowNumber;
-            var disponibility = "disponibility" + rowNumber;
-            var price = "price" + rowNumber;
-            var total = "total" + rowNumber;
-            var bloquage = "bloquage" + rowNumber;
-
-            document.getElementById(quantité).value = 0;
-            document.getElementById(disponibility).innerHTML = "";
-            document.getElementById(price).innerHTML = "0";
-            document.getElementById(total).innerHTML = "0";
-            document.getElementById(bloquage).innerHTML = "";
-        }
-
-        function calculTotalCommande() {
-            totalCommande = 0;
-            for (let i = 1; i <= maxRowNumber; i++) {
-                var total = "total" + i;
-                totalCommande += parseFloat(document.getElementById(total).innerText);
-            }
-            document.getElementById("totalCommande").innerHTML = totalCommande;
-            document.getElementById("totalCommande").style.color = "green";
-            document.getElementById("totalCommande").style.fontSize = 20;
-            labelMetricValue.text = metricValue+totalCommande;
-            hand.showValue(metricValue+totalCommande, 10, am4core.ease.cubicOut);
-        }
 
         //quantité entée par l'utilisateur
         function showHint1(event) {
-            var nouvelleQteSaisie = parseInt(event.target.value);
-            var rowNumber = event.target.id.substring(event.target.id.indexOf("quantité") + 8, event.target.id.length);
+            nouvelleQteSaisie = parseInt(event.target.value);
+
+            rowNumber = event.target.id.substring(event.target.id.indexOf("quantité") + 8, event.target.id.length);
             if (maxRowNumber < rowNumber) {
                 maxRowNumber = rowNumber;
             }
             qteArtSaisie[rowNumber - 1] = nouvelleQteSaisie;
-
-            var codeArticle = "codeArticle" + rowNumber;
+            codeArticle = "codeArticle" + rowNumber;
+            price = "price" + rowNumber;
+            total = "total" + rowNumber;
             var quantité = "quantité" + rowNumber;
             var disponibility = "disponibility" + rowNumber;
-            var price = "price" + rowNumber;
-            var total = "total" + rowNumber;
             var bloquage = "bloquage" + rowNumber;
-            var tauxDeRemise = '<?php echo $r["taux_Remise"]; ?>';
-
+            //ajax(codeArticle, price, total, rowNumber);
             if (document.getElementById(codeArticle).value.length == 0) {
                 document.getElementById(price).innerHTML = "0";
                 document.getElementById(total).innerHTML = "0";
                 return;
             } else {
-                document.getElementById(total).innerHTML = (parseFloat(document.getElementById(price).textContent) * (100 - tauxDeRemise) / 100) * parseInt(nouvelleQteSaisie);
-
-                //ajax(codeArticle, price, total, rowNumber);
-                //calcul du Total TTC
-                calculTotalCommande();
                 //Disponibilité
                 if (parseInt(stockArtSaisie[rowNumber - 1]) >= parseInt(event.target.value)) {
                     document.getElementById(disponibility).innerHTML = "article disponible";
@@ -669,10 +645,11 @@ if ($_SESSION['user'] == True) {
                             document.getElementById(bloquage).innerHTML = "C'est la quantité maximale que vous pouvez commander";
                             document.getElementById(bloquage).style.color = "red";
                             document.getElementById(quantité).value = parseInt(stockArtSaisie[rowNumber - 1]);
+                            nouvelleQteSaisie = parseInt(stockArtSaisie[rowNumber - 1]);
                             document.getElementById(disponibility).innerHTML = "article disponible";
                             document.getElementById(disponibility).style.color = "green";
-                            document.getElementById(total).innerHTML = document.getElementById(price).textContent * parseInt(stockArtSaisie[rowNumber - 1]);
-                            calculTotalCommande();
+                            //document.getElementById(total).innerHTML = (document.getElementById(price).textContent * (100 - tauxDeRemise) / 100)* parseInt(stockArtSaisie[rowNumber - 1]);
+                            //calculTotalCommande();
                         }
                     }
                     if (parseInt(stockArtSaisie[rowNumber - 1]) == 0) {
@@ -684,8 +661,9 @@ if ($_SESSION['user'] == True) {
                             document.getElementById(bloquage).innerHTML = "Pièce non disponible";
                             document.getElementById(bloquage).style.color = "red";
                             document.getElementById(quantité).value = 0;
-                            document.getElementById(total).innerHTML = 0;
-                            calculTotalCommande();
+                            nouvelleQteSaisie = 0;
+                            //document.getElementById(total).innerHTML = 0;
+                            //calculTotalCommande();
                         }
                     }
                     if (!pasArtSubst) {
@@ -707,14 +685,39 @@ if ($_SESSION['user'] == True) {
                                 cell2.innerHTML = codArtSubst[i - 1];
                                 cell3.innerHTML = prixArtSubst[i - 1];
                             }
-
                         }
                     }
                 }
+                document.getElementById(total).innerHTML = (parseFloat(document.getElementById(price).textContent) * (100 - tauxDeRemise) / 100) * parseInt(nouvelleQteSaisie);
+                calculTotalCommande();
+                //ajax(codeArticle, price, total, rowNumber);
+            }
+        }
+
+        function calculTotalCommande() {
+            totalCommande = 0;
+            for (let i = 1; i <= maxRowNumber; i++) {
+                var total = "total" + i;
+                totalCommande += parseFloat(document.getElementById(total).innerText);
+            }
+            document.getElementById("totalCommande").innerHTML = totalCommande;
+            document.getElementById("totalCommande").style.color = "green";
+            document.getElementById("totalCommande").style.fontSize = 20;
+            labelMetricValue.text = metricValue + totalCommande;
+            hand.showValue(metricValue + totalCommande, 10, am4core.ease.cubicOut);
+
+            if (labelMetricValue.text > parseFloat('<?php echo json_encode((int)$r2["encours_Autorise"]); ?>')) {
+                hand.showValue(parseFloat('<?php echo json_encode((int)$r2["encours_Autorise"]); ?>'), 10, am4core.ease.cubicOut);
+                document.getElementById('depassementValue').innerHTML = labelMetricValue.text - parseFloat('<?php echo json_encode((int)$r2["encours_Autorise"]); ?>');
+                document.getElementById("depassementValue").style.color = "red";
+                document.getElementById("depassementValue").style.fontSize = 20;
             }
         }
 
         function AjoutArticle() {
+            console.log("ajout " + rowNumber);
+            console.log("max " + maxRowNumber);
+
             var nextRow = parseInt(maxRowNumber) + 1;
             var codeArticleSubst = "codeArticle" + nextRow;
             var price = "price" + nextRow;
@@ -729,12 +732,13 @@ if ($_SESSION['user'] == True) {
                     alert("Cet article est deja ajouté à la commande");
                 } else {
                     if (document.getElementById(i).checked) {
-                        document.getElementById(codeArticleSubst).value = codArtSubst[i - 1];
-                        document.getElementById(quantitéOrigin).value = parseInt(stockArtSaisie[0]);
+                        document.getElementById(quantitéOrigin).value = parseInt(stockArtSaisie[rowNumber-1]);
                         document.getElementById(disponibilityOrigin).innerHTML = "article disponible";
                         document.getElementById(disponibilityOrigin).style.color = "green";
-                        document.getElementById(totalOrigin).innerHTML = document.getElementById(priceOrigin).textContent * parseInt(stockArtSaisie[0]);
+                        document.getElementById(totalOrigin).innerHTML = (document.getElementById(priceOrigin).textContent * (100 - tauxDeRemise) / 100) * parseInt(stockArtSaisie[0]);
                         calculTotalCommande();
+
+                        document.getElementById(codeArticleSubst).value = codArtSubst[i - 1];
                         insertedCode[c] = codArtSubst[i - 1];
                         c++;
                         ajax(codeArticleSubst, price, total, nextRow);
@@ -784,12 +788,39 @@ if ($_SESSION['user'] == True) {
             document.getElementById(quantité).value = parseInt(stockArtSaisie[0]);
             document.getElementById(disponibility).innerHTML = "article disponible";
             document.getElementById(disponibility).style.color = "green";
-            document.getElementById(total).innerHTML = document.getElementById(price).textContent * parseInt(stockArtSaisie[0]);
+            document.getElementById(total).innerHTML = (document.getElementById(price).textContent * (100 - tauxDeRemise) / 100) * parseInt(stockArtSaisie[0]);
             calculTotalCommande();
         }
 
         function hideModal() {
             $('#modalArticleSubstitution').modal("hide");
+        }
+
+        function initialisation(rowNumber) {
+            var codeArticle = "codeArticle" + rowNumber;
+            var quantité = "quantité" + rowNumber;
+            var disponibility = "disponibility" + rowNumber;
+            var price = "price" + rowNumber;
+            var total = "total" + rowNumber;
+            var bloquage = "bloquage" + rowNumber;
+
+            document.getElementById(quantité).value = 0;
+            document.getElementById(disponibility).innerHTML = "";
+            document.getElementById(price).innerHTML = "0";
+            document.getElementById(total).innerHTML = "0";
+            document.getElementById(bloquage).innerHTML = "";
+        }
+
+        function verifierDisponibilite() {
+            for (let g = 1; g <= maxRowNumber; g++) {
+                console.log(parseInt(stockArtSaisie[g - 1]));
+                var quantité = "quantité" + g;
+                console.log(parseInt(stockArtSaisie[g - 1]));
+                console.log(parseInt(quantité));
+                if (parseInt(stockArtSaisie[g - 1]) >= parseInt(quantité)) {
+                    valide = true;
+                }
+            }
         }
 
         function envoyerCommande() {
@@ -904,7 +935,7 @@ if ($_SESSION['user'] == True) {
                                 inp.value = this.getElementsByTagName("input")[0].value;
                                 insertedCode[c] = this.getElementsByTagName("input")[0].value;
                                 c++;
-                                test = true;
+                                isCodeArticle = true;
                             }
                             /*close the list of autocompleted values,
                             (or any other open lists of autocompleted values:*/
