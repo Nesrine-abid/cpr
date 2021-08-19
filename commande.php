@@ -155,6 +155,7 @@ if ($_SESSION['user'] == True) {
 
             var labelMetricValue = chart.radarContainer.createChild(am4core.Label);
             var metricValue = parseFloat('<?php echo json_encode((int)$r2["solde"]); ?>');
+            metricValue = Math.round(metricValue * 100) / 100;
             labelMetricValue.isMeasured = false;
             labelMetricValue.fontSize = "4em";
             labelMetricValue.x = am4core.percent(50);
@@ -586,28 +587,28 @@ if ($_SESSION['user'] == True) {
                             prixArtSubst[i] = AjaxResult[i].prix_Sub;
                             stockArtSubt[i] = AjaxResult[i].Stock_Sub;
                         }
-                        if (nouvelleQteSaisie>stock) {
-                        $('#modalArticleSubstitution').modal({
-                            show: false
-                        })
-                        $('#modalArticleSubstitution').modal('show')
-                        var table = document.getElementById("tableArtSubst");
-                        while (table.rows.length > 1) {
-                            table.deleteRow(1);
-                        }
+                        if (nouvelleQteSaisie > stock) {
+                            $('#modalArticleSubstitution').modal({
+                                show: false
+                            })
+                            $('#modalArticleSubstitution').modal('show')
+                            var table = document.getElementById("tableArtSubst");
+                            while (table.rows.length > 1) {
+                                table.deleteRow(1);
+                            }
 
-                        for (let i = 1; i <= nbreArtSub; i++) {
-                            if (parseInt(stockArtSubt[i - 1]) != 0) {
-                                var row = table.insertRow(i);
-                                var cell1 = row.insertCell(0);
-                                var cell2 = row.insertCell(1);
-                                var cell3 = row.insertCell(2);
-                                cell1.innerHTML = "<input type='radio'id='" + i + "' name='subProduct'><label for='subProduct'>" + "Article" + i + "</label><br>";
-                                cell2.innerHTML = codArtSubst[i - 1];
-                                cell3.innerHTML = prixArtSubst[i - 1];
+                            for (let i = 1; i <= nbreArtSub; i++) {
+                                if (parseInt(stockArtSubt[i - 1]) != 0) {
+                                    var row = table.insertRow(i);
+                                    var cell1 = row.insertCell(0);
+                                    var cell2 = row.insertCell(1);
+                                    var cell3 = row.insertCell(2);
+                                    cell1.innerHTML = "<input type='radio'id='" + i + "' name='subProduct'><label for='subProduct'>" + "Article" + i + "</label><br>";
+                                    cell2.innerHTML = codArtSubst[i - 1];
+                                    cell3.innerHTML = prixArtSubst[i - 1];
+                                }
                             }
                         }
-                    }
                     }
                 }
             };
@@ -706,7 +707,7 @@ if ($_SESSION['user'] == True) {
             document.getElementById("totalCommande").innerHTML = totalCommande;
             document.getElementById("totalCommande").style.color = "green";
             document.getElementById("totalCommande").style.fontSize = 20;
-            labelMetricValue.text = metricValue + totalCommande;
+            labelMetricValue.text = Math.round((metricValue + totalCommande) * 100) / 100;
             hand.showValue(metricValue + totalCommande, 10, am4core.ease.cubicOut);
 
             if (labelMetricValue.text > parseFloat('<?php echo json_encode((int)$r2["encours_Autorise"]); ?>')) {
@@ -786,10 +787,10 @@ if ($_SESSION['user'] == True) {
             var total = "total" + rowNumber;
 
             $('#modalArticleSubstitution').modal("hide");
-            document.getElementById(quantité).value = parseInt(stockArtSaisie[rowNumber-1]);
+            document.getElementById(quantité).value = parseInt(stockArtSaisie[rowNumber - 1]);
             document.getElementById(disponibility).innerHTML = "article disponible";
             document.getElementById(disponibility).style.color = "green";
-            document.getElementById(total).innerHTML = (document.getElementById(price).textContent * (100 - tauxDeRemise) / 100) * parseInt(stockArtSaisie[rowNumber-1]);
+            document.getElementById(total).innerHTML = (document.getElementById(price).textContent * (100 - tauxDeRemise) / 100) * parseInt(stockArtSaisie[rowNumber - 1]);
             calculTotalCommande();
         }
 
@@ -889,6 +890,8 @@ if ($_SESSION['user'] == True) {
         ?>
 
         function autocomplete(inp, arr) {
+            var size = 0;
+            var newVal = '';
             /*the autocomplete function takes two arguments,
             the text field element and an array of possible autocompleted values:*/
             var currentFocus;
@@ -930,6 +933,8 @@ if ($_SESSION['user'] == True) {
                                 inp.value = "";
                                 alert("Cet article est deja ajouté à la commande");
                             } else {
+                                newVal = this.getElementsByTagName("input")[0].value;
+                                size = newVal.length;
                                 inp.value = this.getElementsByTagName("input")[0].value;
                                 insertedCode[c] = this.getElementsByTagName("input")[0].value;
                                 c++;
@@ -947,6 +952,12 @@ if ($_SESSION['user'] == True) {
             /*execute a function presses a key on the keyboard:*/
             inp.addEventListener("keydown", function(e) {
                 var x = document.getElementById(this.id + "autocomplete-list");
+
+                if (e.key == 'Backspace' && document.getElementById(codeArticle).value.length == size) {
+                    var lastVal = document.getElementById(codeArticle).value;
+                    insertedCode.splice(insertedCode.indexOf(lastVal), 1);
+                    c--;
+                }
                 if (x) x = x.getElementsByTagName("div");
                 if (e.keyCode == 40) {
                     /*If the arrow DOWN key is pressed,
