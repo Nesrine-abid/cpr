@@ -506,12 +506,13 @@ if ($_SESSION['user'] == True) {
     </body>
     <script>
         var codeArticle = ''; //dynamic id 
+        var disponibility = '';
         var price = ''; //dynamic id
         var total = ''; //dynamic id 
         var rowNumber = 0;
         var maxRowNumber = 0;
         var nouvelleQteSaisie = 0;
-        var stockArtSaisie = []; //le stock de l'article ajouté dans le tableau
+        var stockArtSaisie = []; //tableau contenant les stock des articles ajoutés à la commande
         var qteArtSaisie = [];
         var prixArtSaisie = [];
         for (let i = 0; i < 20; i++) {
@@ -571,7 +572,7 @@ if ($_SESSION['user'] == True) {
                         stockArtSaisie[rowNumber - 1] = AjaxResult.stock;
                         prixArtSaisie[rowNumber - 1] = AjaxResult.prix_unitaire;
                         stock = AjaxResult.stock;
-                        disponibility(rowNumber);
+                        testDisponibility(rowNumber);
                     } else {
                         pasArtSubst = false;
                         document.getElementById(price).innerHTML = AjaxResult[0].prix_unitaire;
@@ -579,12 +580,34 @@ if ($_SESSION['user'] == True) {
                         prixArtSaisie[rowNumber - 1] = AjaxResult[0].prix_unitaire;
                         nbreArtSub = AjaxResult.length;
                         stock = AjaxResult[0].stock;
-                        disponibility(rowNumber);
+                        testDisponibility(rowNumber);
                         for (let i = 0; i < nbreArtSub; i++) {
                             codArtSubst[i] = AjaxResult[i].Num_Sub;
                             prixArtSubst[i] = AjaxResult[i].prix_Sub;
                             stockArtSubt[i] = AjaxResult[i].Stock_Sub;
                         }
+                        if (nouvelleQteSaisie>stock) {
+                        $('#modalArticleSubstitution').modal({
+                            show: false
+                        })
+                        $('#modalArticleSubstitution').modal('show')
+                        var table = document.getElementById("tableArtSubst");
+                        while (table.rows.length > 1) {
+                            table.deleteRow(1);
+                        }
+
+                        for (let i = 1; i <= nbreArtSub; i++) {
+                            if (parseInt(stockArtSubt[i - 1]) != 0) {
+                                var row = table.insertRow(i);
+                                var cell1 = row.insertCell(0);
+                                var cell2 = row.insertCell(1);
+                                var cell3 = row.insertCell(2);
+                                cell1.innerHTML = "<input type='radio'id='" + i + "' name='subProduct'><label for='subProduct'>" + "Article" + i + "</label><br>";
+                                cell2.innerHTML = codArtSubst[i - 1];
+                                cell3.innerHTML = prixArtSubst[i - 1];
+                            }
+                        }
+                    }
                     }
                 }
             };
@@ -596,8 +619,8 @@ if ($_SESSION['user'] == True) {
             xmlhttp.send();
         }
 
-        function disponibility() {
-            var disponibility = "disponibility" + rowNumber;
+        function testDisponibility() {
+            disponibility = "disponibility" + rowNumber;
             if (stock != 0) {
                 document.getElementById(disponibility).innerHTML = "Article Disponible";
                 document.getElementById(disponibility).style.color = "green";
@@ -621,10 +644,11 @@ if ($_SESSION['user'] == True) {
             codeArticle = "codeArticle" + rowNumber;
             price = "price" + rowNumber;
             total = "total" + rowNumber;
+            disponibility = "disponibility" + rowNumber;
             var quantité = "quantité" + rowNumber;
-            var disponibility = "disponibility" + rowNumber;
             var bloquage = "bloquage" + rowNumber;
-            //ajax(codeArticle, price, total, rowNumber);
+
+            ajax(codeArticle, price, total, rowNumber);
             if (document.getElementById(codeArticle).value.length == 0) {
                 document.getElementById(price).innerHTML = "0";
                 document.getElementById(total).innerHTML = "0";
@@ -666,31 +690,10 @@ if ($_SESSION['user'] == True) {
                             //calculTotalCommande();
                         }
                     }
-                    if (!pasArtSubst) {
-                        $('#modalArticleSubstitution').modal({
-                            show: false
-                        })
-                        $('#modalArticleSubstitution').modal('show')
-                        var table = document.getElementById("tableArtSubst");
-                        while (table.rows.length > 1) {
-                            table.deleteRow(1);
-                        }
-                        for (let i = 1; i <= nbreArtSub; i++) {
-                            if (parseInt(stockArtSubt[i - 1]) != 0) {
-                                var row = table.insertRow(i);
-                                var cell1 = row.insertCell(0);
-                                var cell2 = row.insertCell(1);
-                                var cell3 = row.insertCell(2);
-                                cell1.innerHTML = "<input type='radio'id='" + i + "' name='subProduct'><label for='subProduct'>" + "Article" + i + "</label><br>";
-                                cell2.innerHTML = codArtSubst[i - 1];
-                                cell3.innerHTML = prixArtSubst[i - 1];
-                            }
-                        }
-                    }
+
                 }
                 document.getElementById(total).innerHTML = (parseFloat(document.getElementById(price).textContent) * (100 - tauxDeRemise) / 100) * parseInt(nouvelleQteSaisie);
                 calculTotalCommande();
-                //ajax(codeArticle, price, total, rowNumber);
             }
         }
 
@@ -715,8 +718,6 @@ if ($_SESSION['user'] == True) {
         }
 
         function AjoutArticle() {
-            console.log("ajout " + rowNumber);
-            console.log("max " + maxRowNumber);
 
             var nextRow = parseInt(maxRowNumber) + 1;
             var codeArticleSubst = "codeArticle" + nextRow;
@@ -732,7 +733,7 @@ if ($_SESSION['user'] == True) {
                     alert("Cet article est deja ajouté à la commande");
                 } else {
                     if (document.getElementById(i).checked) {
-                        document.getElementById(quantitéOrigin).value = parseInt(stockArtSaisie[rowNumber-1]);
+                        document.getElementById(quantitéOrigin).value = parseInt(stockArtSaisie[rowNumber - 1]);
                         document.getElementById(disponibilityOrigin).innerHTML = "article disponible";
                         document.getElementById(disponibilityOrigin).style.color = "green";
                         document.getElementById(totalOrigin).innerHTML = (document.getElementById(priceOrigin).textContent * (100 - tauxDeRemise) / 100) * parseInt(stockArtSaisie[0]);
@@ -785,10 +786,10 @@ if ($_SESSION['user'] == True) {
             var total = "total" + rowNumber;
 
             $('#modalArticleSubstitution').modal("hide");
-            document.getElementById(quantité).value = parseInt(stockArtSaisie[0]);
+            document.getElementById(quantité).value = parseInt(stockArtSaisie[rowNumber-1]);
             document.getElementById(disponibility).innerHTML = "article disponible";
             document.getElementById(disponibility).style.color = "green";
-            document.getElementById(total).innerHTML = (document.getElementById(price).textContent * (100 - tauxDeRemise) / 100) * parseInt(stockArtSaisie[0]);
+            document.getElementById(total).innerHTML = (document.getElementById(price).textContent * (100 - tauxDeRemise) / 100) * parseInt(stockArtSaisie[rowNumber-1]);
             calculTotalCommande();
         }
 
@@ -813,10 +814,7 @@ if ($_SESSION['user'] == True) {
 
         function verifierDisponibilite() {
             for (let g = 1; g <= maxRowNumber; g++) {
-                console.log(parseInt(stockArtSaisie[g - 1]));
                 var quantité = "quantité" + g;
-                console.log(parseInt(stockArtSaisie[g - 1]));
-                console.log(parseInt(quantité));
                 if (parseInt(stockArtSaisie[g - 1]) >= parseInt(quantité)) {
                     valide = true;
                 }
